@@ -70,7 +70,7 @@ test('raw', function (t) {
       u('doctype', {name: 'html'}),
       h('html', {lang: 'en'}, [])
     ])),
-    u('root', {data: {quirksMode: false}}, [
+    u('root', {data: {quirksMode: undefined}}, [
       u('doctype', {name: 'html', public: null, system: null}),
       h('html', {lang: 'en'}, [
         h('head'),
