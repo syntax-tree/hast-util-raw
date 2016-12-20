@@ -10,8 +10,8 @@
     "raw",
     "html"
   ],
-  "repository": "https://github.com/wooorm/hast-util-raw",
-  "bugs": "https://github.com/wooorm/hast-util-raw/issues",
+  "repository": "https://github.com/syntax-tree/hast-util-raw",
+  "bugs": "https://github.com/syntax-tree/hast-util-raw/issues",
   "author": "Titus Wormer <tituswormer@gmail.com> (http://wooorm.com)",
   "contributors": [
     "Titus Wormer <tituswormer@gmail.com> (http://wooorm.com)"

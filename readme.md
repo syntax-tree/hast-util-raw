@@ -69,13 +69,13 @@ return a new parsed-again [HAST][] tree.
 
 <!-- Definitions -->
 
-[travis-badge]: https://img.shields.io/travis/wooorm/hast-util-raw.svg
+[travis-badge]: https://img.shields.io/travis/syntax-tree/hast-util-raw.svg
 
-[travis]: https://travis-ci.org/wooorm/hast-util-raw
+[travis]: https://travis-ci.org/syntax-tree/hast-util-raw
 
-[codecov-badge]: https://img.shields.io/codecov/c/github/wooorm/hast-util-raw.svg
+[codecov-badge]: https://img.shields.io/codecov/c/github/syntax-tree/hast-util-raw.svg
 
-[codecov]: https://codecov.io/github/wooorm/hast-util-raw
+[codecov]: https://codecov.io/github/syntax-tree/hast-util-raw
 
 [npm]: https://docs.npmjs.com/cli/install
 
@@ -83,10 +83,10 @@ return a new parsed-again [HAST][] tree.
 
 [author]: http://wooorm.com
 
-[hast]: https://github.com/wooorm/hast
+[hast]: https://github.com/syntax-tree/hast
 
 [remark-rehype]: https://github.com/wooorm/remark-rehype
 
 [rehype-raw]: https://github.com/wooorm/rehype-raw
 
-[vfile]: https://github.com/wooorm/vfile
+[vfile]: https://github.com/vfile/vfile
