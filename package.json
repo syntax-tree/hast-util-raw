@@ -29,22 +29,22 @@
     "zwitch": "^1.0.0"
   },
   "devDependencies": {
-    "browserify": "^13.0.0",
+    "browserify": "^14.0.0",
     "esmangle": "^1.0.0",
     "hastscript": "^3.0.1",
     "nyc": "^8.3.1",
-    "rehype-stringify": "^2.0.0",
-    "remark-cli": "^2.0.0",
-    "remark-parse": "^2.0.2",
-    "remark-preset-wooorm": "^1.0.0",
-    "remark-rehype": "^1.1.0",
+    "rehype-stringify": "^3.0.0",
+    "remark-cli": "^3.0.0",
+    "remark-parse": "^3.0.1",
+    "remark-preset-wooorm": "^2.0.0",
+    "remark-rehype": "^2.0.0",
     "tape": "^4.0.0",
-    "unified": "^5.1.0",
+    "unified": "^6.0.0",
     "unist-builder": "^1.0.2",
-    "xo": "^0.17.0"
+    "xo": "^0.18.0"
   },
   "scripts": {
-    "build-md": "remark . --quiet --frail",
+    "build-md": "remark . -qfo",
     "build-bundle": "browserify index.js --bare -s hastUtilRaw > hast-util-raw.js",
     "build-mangle": "esmangle hast-util-raw.js > hast-util-raw.min.js",
     "build": "npm run build-md && npm run build-bundle && npm run build-mangle",
@@ -61,12 +61,14 @@
   },
   "xo": {
     "space": true,
+    "esnext": false,
     "ignores": [
       "hast-util-raw.js"
     ]
   },
   "remarkConfig": {
-    "output": true,
-    "presets": "wooorm"
+    "plugins": [
+      "preset-wooorm"
+    ]
   }
 }

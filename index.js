@@ -165,7 +165,8 @@ function wrap(tree, file) {
     var start = pos.start(node).offset;
 
     preprocessor.html = null;
-    preprocessor.lastCharPos = preprocessor.pos = -1;
+    preprocessor.lastCharPos = -1;
+    preprocessor.pos = -1;
 
     if (start !== null) {
       preprocessor.droppedBufferSize = start;
@@ -193,7 +194,8 @@ function run(p) {
         p._processInputToken(token);
       }
 
-      tokenizer.currentCharacterToken = tokenizer.currentToken = null;
+      tokenizer.currentToken = null;
+      tokenizer.currentCharacterToken = null;
 
       break;
     }
