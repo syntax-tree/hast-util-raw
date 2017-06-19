@@ -34,13 +34,13 @@ test('raw', function (t) {
 
   t.deepEqual(
     raw(u('root', [h('#foo.bar', 'baz')])),
-    u('root', {data: {quirksMode: undefined}}, [h('#foo.bar', 'baz')]),
+    u('root', {data: {quirksMode: false}}, [h('#foo.bar', 'baz')]),
     'should pass roots through'
   );
 
   t.deepEqual(
     raw(u('root', [])),
-    u('root', {data: {quirksMode: undefined}}, []),
+    u('root', {data: {quirksMode: false}}, []),
     'should pass empty root’s through'
   );
 
@@ -70,7 +70,7 @@ test('raw', function (t) {
       u('doctype', {name: 'html'}),
       h('html', {lang: 'en'}, [])
     ])),
-    u('root', {data: {quirksMode: undefined}}, [
+    u('root', {data: {quirksMode: false}}, [
       u('doctype', {name: 'html', public: null, system: null}),
       h('html', {lang: 'en'}, [
         h('head'),
@@ -85,7 +85,7 @@ test('raw', function (t) {
       h('img', {alt: 'foo', src: 'bar.jpg'}),
       u('raw', '<img alt="foo" src="bar.jpg">')
     ])),
-    u('root', {data: {quirksMode: undefined}}, [
+    u('root', {data: {quirksMode: false}}, [
       h('img', {alt: 'foo', src: 'bar.jpg'}),
       h('img', {alt: 'foo', src: 'bar.jpg'})
     ]),
@@ -97,7 +97,7 @@ test('raw', function (t) {
       u('raw', '<p>Foo, bar!'),
       h('ol', h('li', 'baz'))
     ])),
-    u('root', {data: {quirksMode: undefined}}, [
+    u('root', {data: {quirksMode: false}}, [
       h('p', 'Foo, bar!'),
       h('ol', h('li', 'baz'))
     ]),
@@ -434,7 +434,7 @@ test('integration', function (t) {
                 }
               }
             ],
-            data: {quirksMode: undefined},
+            data: {quirksMode: false},
             position: {
               start: {line: 1, column: 1, offset: 0},
               end: {line: 21, column: 1, offset: 270}

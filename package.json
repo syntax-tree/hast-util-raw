@@ -20,7 +20,7 @@
     "index.js"
   ],
   "dependencies": {
-    "hast-util-from-parse5": "^1.0.0",
+    "hast-util-from-parse5": "^2.0.0",
     "hast-util-to-parse5": "^2.0.0",
     "html-void-elements": "^1.0.1",
     "parse5": "^3.0.0",
