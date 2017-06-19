@@ -1,7 +1,6 @@
 # hast-util-raw [![Build Status][travis-badge]][travis] [![Coverage Status][codecov-badge]][codecov]
 
-Reparse a [HAST][] tree, with support for embedded `raw`
-nodes.
+Reparse a [HAST][] tree, with support for embedded `raw` nodes.
 
 One of the reasons to do this is for “malformed” syntax trees: for
 example, say there’s an `h1` element in a `p` element, this utility
@@ -9,7 +8,7 @@ will make them siblings.
 
 Another reason to do this is if raw HTML/XML is embedded in a syntax
 tree, such as markdown.  If you’re working with markdown, use
-[**remark-rehype**][remark-rehype] and [**rehype-raw**][rehype-raw].
+[`remark-rehype`][remark-rehype] and [`rehype-raw`][rehype-raw].
 
 ## Installation
 
