@@ -100,8 +100,13 @@ function wrap(tree, file) {
   }
 
   function all(nodes) {
-    var length = nodes.length;
+    var length = 0;
     var index = -1;
+
+    /* istanbul ignore else - invalid nodes, see wooorm/rehype-raw#7. */
+    if (nodes) {
+      length = nodes.length;
+    }
 
     while (++index < length) {
       one(nodes[index]);
