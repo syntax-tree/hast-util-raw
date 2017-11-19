@@ -62,6 +62,14 @@ Yields:
 Given a [HAST][] tree and an optional [vfile][] (for positional info),
 return a new parsed-again [HAST][] tree.
 
+## Contribute
+
+See [`contribute.md` in `syntax-tree/hast`][contribute] for ways to get
+started.
+
+This organisation has a [Code of Conduct][coc].  By interacting with this
+repository, organisation, or community you agree to abide by its terms.
+
 ## License
 
 [MIT][license] © [Titus Wormer][author]
@@ -89,3 +97,7 @@ return a new parsed-again [HAST][] tree.
 [rehype-raw]: https://github.com/wooorm/rehype-raw
 
 [vfile]: https://github.com/vfile/vfile
+
+[contribute]: https://github.com/syntax-tree/hast/blob/master/contributing.md
+
+[coc]: https://github.com/syntax-tree/hast/blob/master/code-of-conduct.md
