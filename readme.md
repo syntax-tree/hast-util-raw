@@ -1,6 +1,6 @@
 # hast-util-raw [![Build Status][travis-badge]][travis] [![Coverage Status][codecov-badge]][codecov]
 
-Reparse a [HAST][] tree, with support for embedded `raw` nodes.
+Parse a [HAST][] tree again, with support for embedded `raw` nodes.
 
 One of the reasons to do this is for “malformed” syntax trees: for
 example, say there’s an `h1` element in a `p` element, this utility
