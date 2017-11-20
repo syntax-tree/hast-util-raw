@@ -117,7 +117,7 @@ function wrap(tree, file) {
   function element(node) {
     var empty = voids.indexOf(node.tagName) !== -1;
 
-    parser._processToken(startTag(node, empty), ns.html);
+    parser._processToken(startTag(node), ns.html);
 
     all(node.children);
 
@@ -208,8 +208,9 @@ function run(p) {
   }
 }
 
-function startTag(node, empty) {
+function startTag(node) {
   var start = pos.start(node);
+  var end = pos.end(node);
 
   return {
     type: START_TAG_TOKEN,
@@ -220,13 +221,13 @@ function startTag(node, empty) {
       line: start.line,
       col: start.column,
       startOffset: start.offset,
-      endOffset: start.offset,
+      endOffset: end.offset,
       attrs: {},
       startTag: {
         line: start.line,
         col: start.column,
         startOffset: start.offset,
-        endOffset: empty ? pos.end(node).offset : start.offset
+        endOffset: end.offset
       }
     }
   };
