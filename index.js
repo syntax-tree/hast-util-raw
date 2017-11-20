@@ -130,13 +130,14 @@ function wrap(tree, file) {
   }
 
   function text(node) {
+    var start = pos.start(node);
     parser._processToken({
       type: CHARACTER_TOKEN,
       chars: node.value,
       location: {
-        line: pos.start(node).line,
-        col: pos.start(node).column,
-        startOffset: pos.start(node).offset,
+        line: start.line,
+        col: start.column,
+        startOffset: start.offset,
         endOffset: pos.end(node).offset
       }
     });
@@ -154,13 +155,14 @@ function wrap(tree, file) {
   }
 
   function comment(node) {
+    var start = pos.start(node);
     parser._processToken({
       type: COMMENT_TOKEN,
       data: node.value,
       location: {
-        line: pos.start(node).line,
-        col: pos.start(node).column,
-        startOffset: pos.start(node).offset,
+        line: start.line,
+        col: start.column,
+        startOffset: start.offset,
         endOffset: pos.end(node).offset
       }
     });
