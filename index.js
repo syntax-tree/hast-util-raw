@@ -173,7 +173,7 @@ function wrap(tree, file) {
     preprocessor.pos = -1;
 
     if (start !== null) {
-      preprocessor.droppedBufferSize = start;
+      preprocessor.__locTracker.droppedBufferSize = start;
     }
 
     parser.tokenizer.write(node.value);

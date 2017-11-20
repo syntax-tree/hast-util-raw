@@ -23,7 +23,7 @@
     "hast-util-from-parse5": "^2.0.0",
     "hast-util-to-parse5": "^2.0.0",
     "html-void-elements": "^1.0.1",
-    "parse5": "^3.0.0",
+    "parse5": "^3.0.3",
     "unist-util-position": "^3.0.0",
     "web-namespaces": "^1.0.0",
     "zwitch": "^1.0.0"
