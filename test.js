@@ -1,6 +1,5 @@
 'use strict';
 
-/* Dependencies. */
 var test = require('tape');
 var u = require('unist-builder');
 var h = require('hastscript');
@@ -10,7 +9,6 @@ var remark2rehype = require('remark-rehype');
 var stringify = require('rehype-stringify');
 var raw = require('./');
 
-/* Tests. */
 test('raw', function (t) {
   t.throws(
     function () {
@@ -107,7 +105,6 @@ test('raw', function (t) {
   t.end();
 });
 
-/* Tests. */
 test('integration', function (t) {
   unified()
     .use(parse)

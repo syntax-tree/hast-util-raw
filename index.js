@@ -1,6 +1,5 @@
 'use strict';
 
-/* Dependencies. */
 var Parser = require('parse5/lib/parser');
 var pos = require('unist-util-position');
 var fromParse5 = require('hast-util-from-parse5');
@@ -9,10 +8,8 @@ var voids = require('html-void-elements');
 var ns = require('web-namespaces');
 var zwitch = require('zwitch');
 
-/* Expose. */
 module.exports = wrap;
 
-/* Constants. */
 var IN_TEMPLATE_MODE = 'IN_TEMPLATE_MODE';
 var CHARACTER_TOKEN = 'CHARACTER_TOKEN';
 var START_TAG_TOKEN = 'START_TAG_TOKEN';
