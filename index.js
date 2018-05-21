@@ -1,6 +1,7 @@
 'use strict';
 
 var Parser = require('parse5/lib/parser');
+var Tokenizer = require('parse5/lib/tokenizer');
 var pos = require('unist-util-position');
 var fromParse5 = require('hast-util-from-parse5');
 var toParse5 = require('hast-util-to-parse5');
@@ -123,6 +124,11 @@ function wrap(tree, file) {
 
     if (!empty) {
       parser._processToken(endTag(node));
+      /* If the parser switch the tokenizer mode then put it back in
+       * the right one, see syntax-tree/hast-util-raw/issues/7 */
+      if (parser.tokenizer.state !== Tokenizer.MODE.DATA) {
+        parser.tokenizer.state = Tokenizer.MODE.DATA;
+      }
     }
   }
 
