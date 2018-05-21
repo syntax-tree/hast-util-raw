@@ -102,6 +102,56 @@ test('raw', function (t) {
     'should pass raw nodes through (#2)'
   );
 
+  t.deepEqual(
+    raw(u('root', [
+      h('iframe', {height: 500, src: 'https://ddg.gg'}),
+      u('raw', '<img alt="foo" src="bar.jpg">')
+    ])),
+    u('root', {data: {quirksMode: false}}, [
+      h('iframe', {height: 500, src: 'https://ddg.gg'}),
+      h('img', {alt: 'foo', src: 'bar.jpg'})
+    ]),
+    'should pass raw nodes through even after iframe'
+  );
+
+  t.deepEqual(
+    raw(u('root', [
+      h('textarea', u('text', 'Some text that is <i>not</i> HTML.')),
+      u('raw', '<img alt="foo" src="bar.jpg">')
+    ])),
+    u('root', {data: {quirksMode: false}}, [
+      h('textarea', u('text', 'Some text that is <i>not</i> HTML.')),
+      h('img', {alt: 'foo', src: 'bar.jpg'})
+    ]),
+    'should pass raw nodes through even after textarea (#1)'
+  );
+
+  t.deepEqual(
+    raw(u('root', [
+      u('raw', '<textarea>Some text that is <i>not</i> HTML.</textarea>'),
+      u('raw', '<img alt="foo" src="bar.jpg">')
+    ])),
+    u('root', {data: {quirksMode: false}}, [
+      h('textarea', u('text', 'Some text that is <i>not</i> HTML.')),
+      h('img', {alt: 'foo', src: 'bar.jpg'})
+    ]),
+    'should pass raw nodes through even after textarea (#2)'
+  );
+
+  t.deepEqual(
+    raw(u('root', [
+      u('raw', '<textarea>'),
+      u('text', 'Some text that is <i>not</i> HTML.'),
+      u('raw', '</textarea>'),
+      u('raw', '<p>but this is</p>')
+    ])),
+    u('root', {data: {quirksMode: false}}, [
+      h('textarea', u('text', 'Some text that is <i>not</i> HTML.')),
+      h('p', u('text', 'but this is'))
+    ]),
+    'should pass raw nodes through even after textarea (#3)'
+  );
+
   t.end();
 });
 

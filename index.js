@@ -12,6 +12,7 @@ var xtend = require('xtend');
 module.exports = wrap;
 
 var IN_TEMPLATE_MODE = 'IN_TEMPLATE_MODE';
+var DATA_MODE = 'DATA_STATE';
 var CHARACTER_TOKEN = 'CHARACTER_TOKEN';
 var START_TAG_TOKEN = 'START_TAG_TOKEN';
 var END_TAG_TOKEN = 'END_TAG_TOKEN';
@@ -130,6 +131,12 @@ function wrap(tree, file) {
 
     if (!empty) {
       parser._processToken(endTag(node));
+
+      // Put the parser back in data mode: some elements, like
+      // textareas and iframes, change the state.
+      // See syntax-tree/hast-util-raw/issues/7.
+      // See https://github.com/inikulin/parse5/blob/2528196/packages/parse5/lib/tokenizer/index.js#L222
+      tokenizer.state = DATA_MODE;
     }
   }
 
