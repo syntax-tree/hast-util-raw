@@ -92,6 +92,30 @@ test('raw', function (t) {
 
   t.deepEqual(
     raw(u('root', [
+      h('iframe', {height: 500, src: 'https://ddg.gg'}),
+      u('raw', '<img alt="foo" src="bar.jpg">')
+    ])),
+    u('root', {data: {quirksMode: false}}, [
+      h('iframe', {height: 500, src: 'https://ddg.gg'}),
+      h('img', {alt: 'foo', src: 'bar.jpg'})
+    ]),
+    'should pass raw nodes through even after iframe'
+  );
+
+  t.deepEqual(
+    raw(u('root', [
+      h('textarea', u('text', 'Some text')),
+      u('raw', '<img alt="foo" src="bar.jpg">')
+    ])),
+    u('root', {data: {quirksMode: false}}, [
+      h('textarea', u('text', 'Some text')),
+      h('img', {alt: 'foo', src: 'bar.jpg'})
+    ]),
+    'should pass raw nodes through even after textarea'
+  );
+
+  t.deepEqual(
+    raw(u('root', [
       u('raw', '<p>Foo, bar!'),
       h('ol', h('li', 'baz'))
     ])),
