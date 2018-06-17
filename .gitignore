@@ -5,3 +5,4 @@ coverage/
 node_modules/
 hast-util-raw.js
 hast-util-raw.min.js
+yarn.lock
