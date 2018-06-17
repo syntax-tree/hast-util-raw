@@ -29,6 +29,9 @@
     "zwitch": "^1.0.0"
   },
   "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-preset-env": "^1.7.0",
+    "babelify": "^8.0.0",
     "browserify": "^16.0.0",
     "esmangle": "^1.0.0",
     "hastscript": "^3.0.1",
@@ -45,7 +48,7 @@
   },
   "scripts": {
     "build-md": "remark . -qfo",
-    "build-bundle": "browserify index.js --bare -s hastUtilRaw > hast-util-raw.js",
+    "build-bundle": "browserify index.js -o hast-util-raw.js --bare -s hastUtilRaw -g [ babelify --presets [ \"babel-preset-env\" ] ]",
     "build-mangle": "esmangle hast-util-raw.js > hast-util-raw.min.js",
     "build": "npm run build-md && npm run build-bundle && npm run build-mangle",
     "lint": "xo",
