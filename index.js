@@ -7,6 +7,7 @@ var toParse5 = require('hast-util-to-parse5');
 var voids = require('html-void-elements');
 var ns = require('web-namespaces');
 var zwitch = require('zwitch');
+var xtend = require('xtend');
 
 module.exports = wrap;
 
@@ -14,17 +15,16 @@ var IN_TEMPLATE_MODE = 'IN_TEMPLATE_MODE';
 var CHARACTER_TOKEN = 'CHARACTER_TOKEN';
 var START_TAG_TOKEN = 'START_TAG_TOKEN';
 var END_TAG_TOKEN = 'END_TAG_TOKEN';
-var HIBERNATION_TOKEN = 'HIBERNATION_TOKEN';
 var COMMENT_TOKEN = 'COMMENT_TOKEN';
 var DOCTYPE_TOKEN = 'DOCTYPE_TOKEN';
-var DOCUMENT = 'document';
-var FRAGMENT = 'fragment';
 
 function wrap(tree, file) {
-  var parser = new Parser({locationInfo: true});
+  var parser = new Parser({sourceCodeLocationInfo: true, scriptingEnabled: false});
   var one = zwitch('type');
-  var mode = inferMode(tree);
+  var tokenizer;
   var preprocessor;
+  var posTracker;
+  var locationTracker;
   var result;
 
   one.handlers.root = root;
@@ -35,7 +35,7 @@ function wrap(tree, file) {
   one.handlers.raw = raw;
   one.unknown = unknown;
 
-  result = fromParse5(mode === FRAGMENT ? fragment() : document(), file);
+  result = fromParse5(documentMode(tree) ? document() : fragment(), file);
 
   /* Unpack if possible and when not given a `root`. */
   if (tree.type !== 'root' && result.children.length === 1) {
@@ -77,7 +77,10 @@ function wrap(tree, file) {
     parser._resetInsertionMode();
     parser._findFormInFragmentContext();
 
-    preprocessor = parser.tokenizer.preprocessor;
+    tokenizer = parser.tokenizer;
+    preprocessor = tokenizer.preprocessor;
+    locationTracker = tokenizer.__mixins[0];
+    posTracker = locationTracker.posTracker;
 
     one(tree);
 
@@ -90,6 +93,10 @@ function wrap(tree, file) {
     var doc = parser.treeAdapter.createDocument();
 
     parser._bootstrap(doc, null);
+    tokenizer = parser.tokenizer;
+    preprocessor = tokenizer.preprocessor;
+    locationTracker = tokenizer.__mixins[0];
+    posTracker = locationTracker.posTracker;
 
     one(tree);
 
@@ -100,7 +107,7 @@ function wrap(tree, file) {
     var length = 0;
     var index = -1;
 
-    /* istanbul ignore else - invalid nodes, see wooorm/rehype-raw#7. */
+    /* istanbul ignore else - invalid nodes, see rehypejs/rehype-raw#7. */
     if (nodes) {
       length = nodes.length;
     }
@@ -127,132 +134,113 @@ function wrap(tree, file) {
   }
 
   function text(node) {
-    var start = pos.start(node);
     parser._processToken({
       type: CHARACTER_TOKEN,
       chars: node.value,
-      location: {
-        line: start.line,
-        col: start.column,
-        startOffset: start.offset,
-        endOffset: pos.end(node).offset
-      }
+      location: createParse5Location(node)
     });
   }
 
   function doctype(node) {
     var p5 = toParse5(node);
+
     parser._processToken({
       type: DOCTYPE_TOKEN,
       name: p5.name,
       forceQuirks: false,
       publicId: p5.publicId,
-      systemId: p5.systemId
+      systemId: p5.systemId,
+      location: createParse5Location(node)
     });
   }
 
   function comment(node) {
-    var start = pos.start(node);
     parser._processToken({
       type: COMMENT_TOKEN,
       data: node.value,
-      location: {
-        line: start.line,
-        col: start.column,
-        startOffset: start.offset,
-        endOffset: pos.end(node).offset
-      }
+      location: createParse5Location(node)
     });
   }
 
   function raw(node) {
-    var start = pos.start(node).offset;
+    var start = pos.start(node);
+    var token;
 
+    // Reset preprocessor:
+    // https://github.com/inikulin/parse5/blob/0491902/packages/parse5/lib/tokenizer/preprocessor.js
     preprocessor.html = null;
+    preprocessor.endOfChunkHit = false;
+    preprocessor.lastChunkWritten = false;
     preprocessor.lastCharPos = -1;
     preprocessor.pos = -1;
 
-    if (start !== null) {
-      preprocessor.__locTracker.droppedBufferSize = start;
+    // Reset preprocessor mixin:
+    // https://github.com/inikulin/parse5/blob/0491902/packages/parse5/lib/extensions/position-tracking/preprocessor-mixin.js
+    posTracker.droppedBufferSize = 0;
+    posTracker.line = start.line;
+    posTracker.col = 1;
+    posTracker.offset = 0;
+    posTracker.lineStartPos = -start.column + 1;
+    posTracker.droppedBufferSize = start.offset;
+
+    // Reset location tracker:
+    // https://github.com/inikulin/parse5/blob/0491902/packages/parse5/lib/extensions/location-info/tokenizer-mixin.js
+    locationTracker.currentAttrLocation = null;
+    locationTracker.ctLoc = createParse5Location(node);
+
+    // See the code for `parse` and `parseFragment`:
+    // https://github.com/inikulin/parse5/blob/0491902/packages/parse5/lib/parser/index.js#L371
+    tokenizer.write(node.value);
+    parser._runParsingLoop(null);
+
+    // Process final characters if they’re still there after hibernating.
+    // Similar to:
+    // https://github.com/inikulin/parse5/blob/3bfa7d9/packages/parse5/lib/extensions/location-info/tokenizer-mixin.js#L95
+    token = tokenizer.currentCharacterToken;
+
+    if (token) {
+      token.location.endLine = posTracker.line;
+      token.location.endCol = posTracker.col + 1;
+      token.location.endOffset = posTracker.offset + 1;
+      parser._processToken(token);
     }
 
-    parser.tokenizer.write(node.value);
-
-    run(parser);
-  }
-}
-
-function run(p) {
-  var tokenizer = p.tokenizer;
-  var token;
-
-  while (!p.stopped) {
-    p._setupTokenizerCDATAMode();
-
-    token = tokenizer.getNextToken();
-
-    if (token.type === HIBERNATION_TOKEN) {
-      token = tokenizer.currentCharacterToken || tokenizer.currentToken;
-
-      if (token) {
-        p._processInputToken(token);
-      }
-
-      tokenizer.currentToken = null;
-      tokenizer.currentCharacterToken = null;
-
-      break;
-    }
-
-    p._processInputToken(token);
+    // Reset tokenizer:
+    // https://github.com/inikulin/parse5/blob/8b0048e/packages/parse5/lib/tokenizer/index.js#L215
+    tokenizer.currentToken = null;
+    tokenizer.currentCharacterToken = null;
+    tokenizer.currentAttr = null;
   }
 }
 
 function startTag(node) {
-  var start = pos.start(node);
-  var end = pos.end(node);
+  var location = createParse5Location(node);
+
+  location.startTag = xtend(location);
 
   return {
     type: START_TAG_TOKEN,
     tagName: node.tagName,
     selfClosing: false,
     attrs: attributes(node),
-    location: {
-      line: start.line,
-      col: start.column,
-      startOffset: start.offset,
-      endOffset: end.offset,
-      attrs: {},
-      startTag: {
-        line: start.line,
-        col: start.column,
-        startOffset: start.offset,
-        endOffset: end.offset
-      }
-    }
+    location: location
   };
 }
 
 function attributes(node) {
-  return toParse5({
-    type: 'element',
-    properties: node.properties
-  }).attrs;
+  return toParse5({type: 'element', properties: node.properties}).attrs;
 }
 
 function endTag(node) {
-  var end = pos.end(node);
+  var location = createParse5Location(node);
+
+  location.endTag = xtend(location);
 
   return {
     type: END_TAG_TOKEN,
     tagName: node.tagName,
     attrs: [],
-    location: {
-      line: end.line,
-      col: end.column,
-      startOffset: end.offset,
-      endOffset: end.offset
-    }
+    location: location
   };
 }
 
@@ -260,12 +248,22 @@ function unknown(node) {
   throw new Error('Cannot compile `' + node.type + '` node');
 }
 
-function inferMode(node) {
+function documentMode(node) {
   var head = node.type === 'root' ? node.children[0] : node;
 
-  if (head && (head.type === 'doctype' || head.tagName === 'html')) {
-    return DOCUMENT;
-  }
+  return head && (head.type === 'doctype' || head.tagName === 'html');
+}
 
-  return FRAGMENT;
+function createParse5Location(node) {
+  var start = pos.start(node);
+  var end = pos.end(node);
+
+  return {
+    startLine: start.line,
+    startCol: start.column,
+    startOffset: start.offset,
+    endLine: end.line,
+    endCol: end.column,
+    endOffset: end.offset
+  };
 }

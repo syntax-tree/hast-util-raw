@@ -60,7 +60,7 @@ test('raw', function (t) {
       h('head'),
       h('body')
     ]),
-    'should pass documents through'
+    'should pass documents through (#1)'
   );
 
   t.deepEqual(
@@ -75,7 +75,7 @@ test('raw', function (t) {
         h('body')
       ])
     ]),
-    'should pass documents through'
+    'should pass documents through (#2)'
   );
 
   t.deepEqual(
@@ -87,7 +87,7 @@ test('raw', function (t) {
       h('img', {alt: 'foo', src: 'bar.jpg'}),
       h('img', {alt: 'foo', src: 'bar.jpg'})
     ]),
-    'should pass raw nodes through'
+    'should pass raw nodes through (#1)'
   );
 
   t.deepEqual(
@@ -99,7 +99,7 @@ test('raw', function (t) {
       h('p', 'Foo, bar!'),
       h('ol', h('li', 'baz'))
     ]),
-    'should pass raw nodes through'
+    'should pass raw nodes through (#2)'
   );
 
   t.end();
@@ -161,7 +161,7 @@ test('integration', function (t) {
                 }],
                 position: {
                   start: {line: 3, column: 1, offset: 19},
-                  end: null
+                  end: {line: 5, column: 1, offset: 37}
                 }
               },
               {
@@ -422,12 +422,12 @@ test('integration', function (t) {
                   value: 'Hello, world!',
                   position: {
                     start: {line: 20, column: 4, offset: 256},
-                    end: {}
+                    end: {line: 20, column: 17, offset: 270}
                   }
                 }],
                 position: {
                   start: {line: 20, column: 1, offset: 253},
-                  end: null
+                  end: {line: 20, column: 17, offset: 270}
                 }
               }
             ],
