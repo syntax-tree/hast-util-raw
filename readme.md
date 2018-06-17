@@ -21,20 +21,14 @@ npm install hast-util-raw
 ## Usage
 
 ```javascript
-var h = require('hastscript');
-var raw = require('hast-util-raw');
+var h = require('hastscript')
+var raw = require('hast-util-raw')
 
-var tree = h('div', [
-  h('h1', [
-    'Foo ',
-    h('h2', 'Bar'),
-    ' Baz'
-  ])
-]);
+var tree = h('div', [h('h1', ['Foo ', h('h2', 'Bar'), ' Baz'])])
 
-var clean = raw(tree);
+var clean = raw(tree)
 
-console.log(clean);
+console.log(clean)
 ```
 
 Yields:

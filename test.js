@@ -1,169 +1,167 @@
-'use strict';
+'use strict'
 
-var test = require('tape');
-var u = require('unist-builder');
-var h = require('hastscript');
-var unified = require('unified');
-var parse = require('remark-parse');
-var remark2rehype = require('remark-rehype');
-var stringify = require('rehype-stringify');
-var raw = require('.');
+var test = require('tape')
+var u = require('unist-builder')
+var h = require('hastscript')
+var unified = require('unified')
+var parse = require('remark-parse')
+var remark2rehype = require('remark-rehype')
+var stringify = require('rehype-stringify')
+var raw = require('.')
 
-test('raw', function (t) {
+test('raw', function(t) {
   t.throws(
-    function () {
-      raw(u('unknown'));
+    function() {
+      raw(u('unknown'))
     },
     /^Error: Cannot compile `unknown` node$/,
     'should throw for unknown nodes'
-  );
+  )
 
   t.deepEqual(
     raw(h('#foo.bar', 'baz')),
     h('#foo.bar', 'baz'),
     'should pass elements through'
-  );
+  )
 
   t.deepEqual(
     raw(h('img', {alt: 'foo', src: 'bar.jpg'})),
     h('img', {alt: 'foo', src: 'bar.jpg'}),
     'should pass void elements through'
-  );
+  )
 
   t.deepEqual(
     raw(u('root', [h('#foo.bar', 'baz')])),
     u('root', {data: {quirksMode: false}}, [h('#foo.bar', 'baz')]),
     'should pass roots through'
-  );
+  )
 
   t.deepEqual(
     raw(u('root', [])),
     u('root', {data: {quirksMode: false}}, []),
     'should pass empty root’s through'
-  );
+  )
 
   t.deepEqual(
     raw(u('text', 'foo')),
     u('text', 'foo'),
     'should pass texts through'
-  );
+  )
 
   t.deepEqual(
     raw(u('comment', 'foo')),
     u('comment', 'foo'),
     'should pass comments through'
-  );
+  )
 
   t.deepEqual(
     raw(h('html', {lang: 'en'})),
-    h('html', {lang: 'en'}, [
-      h('head'),
-      h('body')
-    ]),
+    h('html', {lang: 'en'}, [h('head'), h('body')]),
     'should pass documents through (#1)'
-  );
+  )
 
   t.deepEqual(
-    raw(u('root', [
-      u('doctype', {name: 'html'}),
-      h('html', {lang: 'en'}, [])
-    ])),
+    raw(u('root', [u('doctype', {name: 'html'}), h('html', {lang: 'en'}, [])])),
     u('root', {data: {quirksMode: false}}, [
       u('doctype', {name: 'html', public: null, system: null}),
-      h('html', {lang: 'en'}, [
-        h('head'),
-        h('body')
-      ])
+      h('html', {lang: 'en'}, [h('head'), h('body')])
     ]),
     'should pass documents through (#2)'
-  );
+  )
 
   t.deepEqual(
-    raw(u('root', [
-      h('img', {alt: 'foo', src: 'bar.jpg'}),
-      u('raw', '<img alt="foo" src="bar.jpg">')
-    ])),
+    raw(
+      u('root', [
+        h('img', {alt: 'foo', src: 'bar.jpg'}),
+        u('raw', '<img alt="foo" src="bar.jpg">')
+      ])
+    ),
     u('root', {data: {quirksMode: false}}, [
       h('img', {alt: 'foo', src: 'bar.jpg'}),
       h('img', {alt: 'foo', src: 'bar.jpg'})
     ]),
     'should pass raw nodes through (#1)'
-  );
+  )
 
   t.deepEqual(
-    raw(u('root', [
-      u('raw', '<p>Foo, bar!'),
-      h('ol', h('li', 'baz'))
-    ])),
+    raw(u('root', [u('raw', '<p>Foo, bar!'), h('ol', h('li', 'baz'))])),
     u('root', {data: {quirksMode: false}}, [
       h('p', 'Foo, bar!'),
       h('ol', h('li', 'baz'))
     ]),
     'should pass raw nodes through (#2)'
-  );
+  )
 
   t.deepEqual(
-    raw(u('root', [
-      h('iframe', {height: 500, src: 'https://ddg.gg'}),
-      u('raw', '<img alt="foo" src="bar.jpg">')
-    ])),
+    raw(
+      u('root', [
+        h('iframe', {height: 500, src: 'https://ddg.gg'}),
+        u('raw', '<img alt="foo" src="bar.jpg">')
+      ])
+    ),
     u('root', {data: {quirksMode: false}}, [
       h('iframe', {height: 500, src: 'https://ddg.gg'}),
       h('img', {alt: 'foo', src: 'bar.jpg'})
     ]),
     'should pass raw nodes through even after iframe'
-  );
+  )
 
   t.deepEqual(
-    raw(u('root', [
-      h('textarea', u('text', 'Some text that is <i>not</i> HTML.')),
-      u('raw', '<img alt="foo" src="bar.jpg">')
-    ])),
+    raw(
+      u('root', [
+        h('textarea', u('text', 'Some text that is <i>not</i> HTML.')),
+        u('raw', '<img alt="foo" src="bar.jpg">')
+      ])
+    ),
     u('root', {data: {quirksMode: false}}, [
       h('textarea', u('text', 'Some text that is <i>not</i> HTML.')),
       h('img', {alt: 'foo', src: 'bar.jpg'})
     ]),
     'should pass raw nodes through even after textarea (#1)'
-  );
+  )
 
   t.deepEqual(
-    raw(u('root', [
-      u('raw', '<textarea>Some text that is <i>not</i> HTML.</textarea>'),
-      u('raw', '<img alt="foo" src="bar.jpg">')
-    ])),
+    raw(
+      u('root', [
+        u('raw', '<textarea>Some text that is <i>not</i> HTML.</textarea>'),
+        u('raw', '<img alt="foo" src="bar.jpg">')
+      ])
+    ),
     u('root', {data: {quirksMode: false}}, [
       h('textarea', u('text', 'Some text that is <i>not</i> HTML.')),
       h('img', {alt: 'foo', src: 'bar.jpg'})
     ]),
     'should pass raw nodes through even after textarea (#2)'
-  );
+  )
 
   t.deepEqual(
-    raw(u('root', [
-      u('raw', '<textarea>'),
-      u('text', 'Some text that is <i>not</i> HTML.'),
-      u('raw', '</textarea>'),
-      u('raw', '<p>but this is</p>')
-    ])),
+    raw(
+      u('root', [
+        u('raw', '<textarea>'),
+        u('text', 'Some text that is <i>not</i> HTML.'),
+        u('raw', '</textarea>'),
+        u('raw', '<p>but this is</p>')
+      ])
+    ),
     u('root', {data: {quirksMode: false}}, [
       h('textarea', u('text', 'Some text that is <i>not</i> HTML.')),
       h('p', u('text', 'but this is'))
     ]),
     'should pass raw nodes through even after textarea (#3)'
-  );
+  )
 
-  t.end();
-});
+  t.end()
+})
 
-test('integration', function (t) {
+test('integration', function(t) {
   unified()
     .use(parse)
     .use(remark2rehype, {allowDangerousHTML: true})
-    .use(function () {
-      return raw;
+    .use(function() {
+      return raw
     })
-    .use(function () {
-      return transformer;
+    .use(function() {
+      return transformer
       function transformer(tree) {
         t.deepEqual(
           tree,
@@ -174,23 +172,27 @@ test('integration', function (t) {
                 type: 'element',
                 tagName: 'p',
                 properties: {},
-                children: [{
-                  type: 'element',
-                  tagName: 'i',
-                  properties: {},
-                  children: [{
-                    type: 'text',
-                    value: 'Some title',
+                children: [
+                  {
+                    type: 'element',
+                    tagName: 'i',
+                    properties: {},
+                    children: [
+                      {
+                        type: 'text',
+                        value: 'Some title',
+                        position: {
+                          start: {line: 1, column: 4, offset: 3},
+                          end: {line: 1, column: 14, offset: 13}
+                        }
+                      }
+                    ],
                     position: {
-                      start: {line: 1, column: 4, offset: 3},
-                      end: {line: 1, column: 14, offset: 13}
+                      start: {line: 1, column: 1, offset: 0},
+                      end: {line: 1, column: 18, offset: 17}
                     }
-                  }],
-                  position: {
-                    start: {line: 1, column: 1, offset: 0},
-                    end: {line: 1, column: 18, offset: 17}
                   }
-                }],
+                ],
                 position: {
                   start: {line: 1, column: 1, offset: 0},
                   end: {line: 1, column: 18, offset: 17}
@@ -201,14 +203,16 @@ test('integration', function (t) {
                 type: 'element',
                 tagName: 'p',
                 properties: {},
-                children: [{
-                  type: 'text',
-                  value: 'Hello, world!\n',
-                  position: {
-                    start: {line: 3, column: 4, offset: 22},
-                    end: null
+                children: [
+                  {
+                    type: 'text',
+                    value: 'Hello, world!\n',
+                    position: {
+                      start: {line: 3, column: 4, offset: 22},
+                      end: null
+                    }
                   }
-                }],
+                ],
                 position: {
                   start: {line: 3, column: 1, offset: 19},
                   end: {line: 5, column: 1, offset: 37}
@@ -224,14 +228,16 @@ test('integration', function (t) {
                     type: 'element',
                     tagName: 'li',
                     properties: {},
-                    children: [{
-                      type: 'text',
-                      value: 'This',
-                      position: {
-                        start: {line: 5, column: 5, offset: 41},
-                        end: {line: 5, column: 9, offset: 45}
+                    children: [
+                      {
+                        type: 'text',
+                        value: 'This',
+                        position: {
+                          start: {line: 5, column: 5, offset: 41},
+                          end: {line: 5, column: 9, offset: 45}
+                        }
                       }
-                    }],
+                    ],
                     position: {
                       start: {line: 5, column: 1, offset: 37},
                       end: {line: 5, column: 9, offset: 45}
@@ -242,14 +248,16 @@ test('integration', function (t) {
                     type: 'element',
                     tagName: 'li',
                     properties: {},
-                    children: [{
-                      type: 'text',
-                      value: 'Is',
-                      position: {
-                        start: {line: 6, column: 5, offset: 50},
-                        end: {line: 6, column: 7, offset: 52}
+                    children: [
+                      {
+                        type: 'text',
+                        value: 'Is',
+                        position: {
+                          start: {line: 6, column: 5, offset: 50},
+                          end: {line: 6, column: 7, offset: 52}
+                        }
                       }
-                    }],
+                    ],
                     position: {
                       start: {line: 6, column: 1, offset: 46},
                       end: {line: 6, column: 7, offset: 52}
@@ -260,14 +268,16 @@ test('integration', function (t) {
                     type: 'element',
                     tagName: 'li',
                     properties: {},
-                    children: [{
-                      type: 'text',
-                      value: 'A',
-                      position: {
-                        start: {line: 7, column: 5, offset: 57},
-                        end: {line: 7, column: 6, offset: 58}
+                    children: [
+                      {
+                        type: 'text',
+                        value: 'A',
+                        position: {
+                          start: {line: 7, column: 5, offset: 57},
+                          end: {line: 7, column: 6, offset: 58}
+                        }
                       }
-                    }],
+                    ],
                     position: {
                       start: {line: 7, column: 1, offset: 53},
                       end: {line: 7, column: 6, offset: 58}
@@ -278,14 +288,16 @@ test('integration', function (t) {
                     type: 'element',
                     tagName: 'li',
                     properties: {},
-                    children: [{
-                      type: 'text',
-                      value: 'List',
-                      position: {
-                        start: {line: 8, column: 5, offset: 63},
-                        end: {line: 8, column: 9, offset: 67}
+                    children: [
+                      {
+                        type: 'text',
+                        value: 'List',
+                        position: {
+                          start: {line: 8, column: 5, offset: 63},
+                          end: {line: 8, column: 9, offset: 67}
+                        }
                       }
-                    }],
+                    ],
                     position: {
                       start: {line: 8, column: 1, offset: 59},
                       end: {line: 8, column: 9, offset: 67}
@@ -316,14 +328,16 @@ test('integration', function (t) {
                     type: 'element',
                     tagName: 'em',
                     properties: {},
-                    children: [{
-                      type: 'text',
-                      value: 'markdown',
-                      position: {
-                        start: {line: 10, column: 11, offset: 79},
-                        end: {line: 10, column: 19, offset: 87}
+                    children: [
+                      {
+                        type: 'text',
+                        value: 'markdown',
+                        position: {
+                          start: {line: 10, column: 11, offset: 79},
+                          end: {line: 10, column: 19, offset: 87}
+                        }
                       }
-                    }],
+                    ],
                     position: {
                       start: {line: 10, column: 10, offset: 78},
                       end: {line: 10, column: 20, offset: 88}
@@ -341,14 +355,16 @@ test('integration', function (t) {
                     type: 'element',
                     tagName: 'em',
                     properties: {},
-                    children: [{
-                      type: 'text',
-                      value: 'HTML',
-                      position: {
-                        start: {line: 10, column: 29, offset: 97},
-                        end: {line: 10, column: 33, offset: 101}
+                    children: [
+                      {
+                        type: 'text',
+                        value: 'HTML',
+                        position: {
+                          start: {line: 10, column: 29, offset: 97},
+                          end: {line: 10, column: 33, offset: 101}
+                        }
                       }
-                    }],
+                    ],
                     position: {
                       start: {line: 10, column: 25, offset: 93},
                       end: {line: 10, column: 38, offset: 106}
@@ -384,20 +400,22 @@ test('integration', function (t) {
                 type: 'element',
                 tagName: 'p',
                 properties: {},
-                children: [{
-                  type: 'element',
-                  tagName: 'img',
-                  properties: {
-                    src: 'https://example.com/favicon.ico',
-                    alt: 'an image',
-                    title: 'title'
-                  },
-                  children: [],
-                  position: {
-                    start: {line: 14, column: 1, offset: 114},
-                    end: {line: 14, column: 53, offset: 166}
+                children: [
+                  {
+                    type: 'element',
+                    tagName: 'img',
+                    properties: {
+                      src: 'https://example.com/favicon.ico',
+                      alt: 'an image',
+                      title: 'title'
+                    },
+                    children: [],
+                    position: {
+                      start: {line: 14, column: 1, offset: 114},
+                      end: {line: 14, column: 53, offset: 166}
+                    }
                   }
-                }],
+                ],
                 position: {
                   start: {line: 14, column: 1, offset: 114},
                   end: {line: 14, column: 53, offset: 166}
@@ -408,25 +426,29 @@ test('integration', function (t) {
                 type: 'element',
                 tagName: 'p',
                 properties: {},
-                children: [{
-                  type: 'element',
-                  tagName: 'svg',
-                  properties: {},
-                  children: [{
+                children: [
+                  {
                     type: 'element',
-                    tagName: 'rect',
+                    tagName: 'svg',
                     properties: {},
-                    children: [],
+                    children: [
+                      {
+                        type: 'element',
+                        tagName: 'rect',
+                        properties: {},
+                        children: [],
+                        position: {
+                          start: {line: 16, column: 6, offset: 173},
+                          end: {line: 16, column: 13, offset: 180}
+                        }
+                      }
+                    ],
                     position: {
-                      start: {line: 16, column: 6, offset: 173},
-                      end: {line: 16, column: 13, offset: 180}
+                      start: {line: 16, column: 1, offset: 168},
+                      end: {line: 16, column: 19, offset: 186}
                     }
-                  }],
-                  position: {
-                    start: {line: 16, column: 1, offset: 168},
-                    end: {line: 16, column: 19, offset: 186}
                   }
-                }],
+                ],
                 position: {
                   start: {line: 16, column: 1, offset: 168},
                   end: {line: 16, column: 19, offset: 186}
@@ -467,14 +489,16 @@ test('integration', function (t) {
                 type: 'element',
                 tagName: 'p',
                 properties: {},
-                children: [{
-                  type: 'text',
-                  value: 'Hello, world!',
-                  position: {
-                    start: {line: 20, column: 4, offset: 256},
-                    end: {line: 20, column: 17, offset: 270}
+                children: [
+                  {
+                    type: 'text',
+                    value: 'Hello, world!',
+                    position: {
+                      start: {line: 20, column: 4, offset: 256},
+                      end: {line: 20, column: 17, offset: 270}
+                    }
                   }
-                }],
+                ],
                 position: {
                   start: {line: 20, column: 1, offset: 253},
                   end: {line: 20, column: 17, offset: 270}
@@ -488,56 +512,59 @@ test('integration', function (t) {
             }
           },
           'should equal the fixture tree'
-        );
+        )
       }
     })
     .use(stringify)
-    .process([
-      '<i>Some title</i>',
-      '',
-      '<p>Hello, world!',
-      '',
-      '*   This',
-      '*   Is',
-      '*   A',
-      '*   List',
-      '',
-      'A mix of *markdown* and <em>HTML</em>.',
-      '',
-      '***',
-      '',
-      '![an image](https://example.com/favicon.ico "title")',
-      '',
-      '<svg><rect/></svg>',
-      '',
-      '<div id="foo" class="bar baz"><img src="a" alt=bar>alfred</div>',
-      '',
-      '<p>Hello, world!',
-      ''
-    ].join('\n'), function (err, file) {
-      t.ifErr(err, 'should not fail');
+    .process(
+      [
+        '<i>Some title</i>',
+        '',
+        '<p>Hello, world!',
+        '',
+        '*   This',
+        '*   Is',
+        '*   A',
+        '*   List',
+        '',
+        'A mix of *markdown* and <em>HTML</em>.',
+        '',
+        '***',
+        '',
+        '![an image](https://example.com/favicon.ico "title")',
+        '',
+        '<svg><rect/></svg>',
+        '',
+        '<div id="foo" class="bar baz"><img src="a" alt=bar>alfred</div>',
+        '',
+        '<p>Hello, world!',
+        ''
+      ].join('\n'),
+      function(err, file) {
+        t.ifErr(err, 'should not fail')
 
-      t.equal(
-        String(file),
-        [
-          '<p><i>Some title</i></p>',
-          '<p>Hello, world!',
-          '</p><ul>',
-          '<li>This</li>',
-          '<li>Is</li>',
-          '<li>A</li>',
-          '<li>List</li>',
-          '</ul>',
-          '<p>A mix of <em>markdown</em> and <em>HTML</em>.</p>',
-          '<hr>',
-          '<p><img src="https://example.com/favicon.ico" alt="an image" title="title"></p>',
-          '<p><svg><rect></rect></svg></p>',
-          '<div id="foo" class="bar baz"><img src="a" alt="bar">alfred</div>',
-          '<p>Hello, world!</p>'
-        ].join('\n'),
-        'should equal the fixture'
-      );
-    });
+        t.equal(
+          String(file),
+          [
+            '<p><i>Some title</i></p>',
+            '<p>Hello, world!',
+            '</p><ul>',
+            '<li>This</li>',
+            '<li>Is</li>',
+            '<li>A</li>',
+            '<li>List</li>',
+            '</ul>',
+            '<p>A mix of <em>markdown</em> and <em>HTML</em>.</p>',
+            '<hr>',
+            '<p><img src="https://example.com/favicon.ico" alt="an image" title="title"></p>',
+            '<p><svg><rect></rect></svg></p>',
+            '<div id="foo" class="bar baz"><img src="a" alt="bar">alfred</div>',
+            '<p>Hello, world!</p>'
+          ].join('\n'),
+          'should equal the fixture'
+        )
+      }
+    )
 
-  t.end();
-});
+  t.end()
+})
