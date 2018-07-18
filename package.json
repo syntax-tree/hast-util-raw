@@ -30,9 +30,6 @@
     "zwitch": "^1.0.0"
   },
   "devDependencies": {
-    "babel-core": "^6.26.3",
-    "babel-preset-env": "^1.7.0",
-    "babelify": "^8.0.0",
     "browserify": "^16.0.0",
     "esmangle": "^1.0.0",
     "hastscript": "^4.0.0",
@@ -44,14 +41,15 @@
     "remark-preset-wooorm": "^4.0.0",
     "remark-rehype": "^3.0.0",
     "tape": "^4.0.0",
+    "tinyify": "^2.4.3",
     "unified": "^7.0.0",
     "unist-builder": "^1.0.2",
     "xo": "^0.21.0"
   },
   "scripts": {
     "format": "remark . -qfo && prettier --write '**/*.js' && xo --fix",
-    "build-bundle": "browserify index.js -o hast-util-raw.js --bare -s hastUtilRaw -g [ babelify --presets [ \"babel-preset-env\" ] ]",
-    "build-mangle": "esmangle hast-util-raw.js > hast-util-raw.min.js",
+    "build-bundle": "browserify index.js -s hastUtilRaw > hast-util-raw.js",
+    "build-mangle": "browserify index.js -s hastUtilRaw -p tinyify > hast-util-raw.min.js",
     "build": "npm run build-bundle && npm run build-mangle",
     "test-api": "node test",
     "test-coverage": "nyc --reporter lcov tape test.js",
