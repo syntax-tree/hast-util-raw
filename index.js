@@ -240,7 +240,11 @@ function startTag(node) {
 }
 
 function attributes(node) {
-  return toParse5({type: 'element', properties: node.properties}).attrs
+  return toParse5({
+    tagName: node.tagName,
+    type: 'element',
+    properties: node.properties
+  }).attrs
 }
 
 function endTag(node) {
