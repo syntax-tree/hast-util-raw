@@ -1,6 +1,6 @@
 # hast-util-raw [![Build][build-badge]][build] [![Coverage][coverage-badge]][coverage] [![Downloads][downloads-badge]][downloads] [![Chat][chat-badge]][chat]
 
-Parse a [HAST][] tree again, with support for embedded `raw` nodes.
+Parse a [hast][] tree again, with support for embedded `raw` nodes.
 
 One of the reasons to do this is for “malformed” syntax trees: for
 example, say there’s an `h1` element in a `p` element, this utility
@@ -53,8 +53,8 @@ Yields:
 
 ### `raw(tree[, file])`
 
-Given a [HAST][] tree and an optional [vfile][] (for positional info),
-return a new parsed-again [HAST][] tree.
+Given a [hast][] tree and an optional [vfile][] (for positional info),
+return a new parsed-again [hast][] tree.
 
 ## Contribute
 
