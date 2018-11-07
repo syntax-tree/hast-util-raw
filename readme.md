@@ -1,4 +1,4 @@
-# hast-util-raw [![Build Status][travis-badge]][travis] [![Coverage Status][codecov-badge]][codecov]
+# hast-util-raw [![Build][build-badge]][build] [![Coverage][coverage-badge]][coverage] [![Downloads][downloads-badge]][downloads] [![Chat][chat-badge]][chat]
 
 Parse a [HAST][] tree again, with support for embedded `raw` nodes.
 
@@ -70,13 +70,21 @@ repository, organisation, or community you agree to abide by its terms.
 
 <!-- Definitions -->
 
-[travis-badge]: https://img.shields.io/travis/syntax-tree/hast-util-raw.svg
+[build-badge]: https://img.shields.io/travis/syntax-tree/hast-util-raw.svg
 
-[travis]: https://travis-ci.org/syntax-tree/hast-util-raw
+[build]: https://travis-ci.org/syntax-tree/hast-util-raw
 
-[codecov-badge]: https://img.shields.io/codecov/c/github/syntax-tree/hast-util-raw.svg
+[coverage-badge]: https://img.shields.io/codecov/c/github/syntax-tree/hast-util-raw.svg
 
-[codecov]: https://codecov.io/github/syntax-tree/hast-util-raw
+[coverage]: https://codecov.io/github/syntax-tree/hast-util-raw
+
+[downloads-badge]: https://img.shields.io/npm/dm/hast-util-raw.svg
+
+[downloads]: https://www.npmjs.com/package/hast-util-raw
+
+[chat-badge]: https://img.shields.io/badge/join%20the%20community-on%20spectrum-7b16ff.svg
+
+[chat]: https://spectrum.chat/unified/rehype
 
 [npm]: https://docs.npmjs.com/cli/install
 
