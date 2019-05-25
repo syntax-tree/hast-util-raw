@@ -1,26 +1,36 @@
-# hast-util-raw [![Build][build-badge]][build] [![Coverage][coverage-badge]][coverage] [![Downloads][downloads-badge]][downloads] [![Chat][chat-badge]][chat]
+# hast-util-raw
 
-Parse a [hast][] tree again, with support for embedded `raw` nodes.
+[![Build][build-badge]][build]
+[![Coverage][coverage-badge]][coverage]
+[![Downloads][downloads-badge]][downloads]
+[![Size][size-badge]][size]
+[![Sponsors][sponsors-badge]][collective]
+[![Backers][backers-badge]][collective]
+[![Chat][chat-badge]][chat]
 
-One of the reasons to do this is for “malformed” syntax trees: for
-example, say there’s an `h1` element in a `p` element, this utility
-will make them siblings.
+[**hast**][hast] utility to parse the [*tree*][tree] again, now supporting
+embedded `raw` nodes.
 
-Another reason to do this is if raw HTML/XML is embedded in a syntax
-tree, such as markdown.  If you’re working with markdown, use
-[`remark-rehype`][remark-rehype] and [`rehype-raw`][rehype-raw].
+One of the reasons to do this is for “malformed” syntax trees: for example, say
+there’s an `h1` element in a `p` element, this utility will make them siblings.
 
-## Installation
+Another reason to do this is if raw HTML/XML is embedded in a syntax tree, which
+can occur when coming from Markdown using [`mdast-util-to-hast`][to-hast].
+
+If you’re working with [**remark**][remark] and/or
+[`remark-rehype`][remark-rehype], use [`rehype-raw`][rehype-raw] instead.
+
+## Install
 
 [npm][]:
 
-```bash
+```sh
 npm install hast-util-raw
 ```
 
 ## Usage
 
-```javascript
+```js
 var h = require('hastscript')
 var raw = require('hast-util-raw')
 
@@ -53,16 +63,19 @@ Yields:
 
 ### `raw(tree[, file])`
 
-Given a [hast][] tree and an optional [vfile][] (for positional info),
-return a new parsed-again [hast][] tree.
+Given a [**hast**][hast] [*tree*][tree] and an optional [vfile][] (for
+[positional info][position-information]), return a new parsed-again
+[**hast**][hast] [*tree*][tree].
 
 ## Contribute
 
-See [`contributing.md` in `syntax-tree/hast`][contributing] for ways to get
+See [`contributing.md` in `syntax-tree/.github`][contributing] for ways to get
 started.
+See [`support.md`][support] for ways to get help.
 
-This organisation has a [Code of Conduct][coc].  By interacting with this
-repository, organisation, or community you agree to abide by its terms.
+This project has a [Code of Conduct][coc].
+By interacting with this repository, organisation, or community you agree to
+abide by its terms.
 
 ## License
 
@@ -82,9 +95,19 @@ repository, organisation, or community you agree to abide by its terms.
 
 [downloads]: https://www.npmjs.com/package/hast-util-raw
 
+[size-badge]: https://img.shields.io/bundlephobia/minzip/hast-util-raw.svg
+
+[size]: https://bundlephobia.com/result?p=hast-util-raw
+
+[sponsors-badge]: https://opencollective.com/unified/sponsors/badge.svg
+
+[backers-badge]: https://opencollective.com/unified/backers/badge.svg
+
+[collective]: https://opencollective.com/unified
+
 [chat-badge]: https://img.shields.io/badge/join%20the%20community-on%20spectrum-7b16ff.svg
 
-[chat]: https://spectrum.chat/unified/rehype
+[chat]: https://spectrum.chat/unified/syntax-tree
 
 [npm]: https://docs.npmjs.com/cli/install
 
@@ -92,14 +115,24 @@ repository, organisation, or community you agree to abide by its terms.
 
 [author]: https://wooorm.com
 
+[contributing]: https://github.com/syntax-tree/.github/blob/master/contributing.md
+
+[support]: https://github.com/syntax-tree/.github/blob/master/support.md
+
+[coc]: https://github.com/syntax-tree/.github/blob/master/code-of-conduct.md
+
+[tree]: https://github.com/syntax-tree/unist#tree
+
+[position-information]: https://github.com/syntax-tree/unist#positional-information
+
 [hast]: https://github.com/syntax-tree/hast
 
-[remark-rehype]: https://github.com/wooorm/remark-rehype
-
-[rehype-raw]: https://github.com/wooorm/rehype-raw
+[to-hast]: https://github.com/syntax-tree/mdast-util-to-hast
 
 [vfile]: https://github.com/vfile/vfile
 
-[contributing]: https://github.com/syntax-tree/hast/blob/master/contributing.md
+[remark]: https://github.com/remarkjs/remark
 
-[coc]: https://github.com/syntax-tree/hast/blob/master/code-of-conduct.md
+[remark-rehype]: https://github.com/remarkjs/remark-rehype
+
+[rehype-raw]: https://github.com/rehypejs/rehype-raw
