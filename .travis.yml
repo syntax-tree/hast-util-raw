@@ -1,7 +1,7 @@
 language: node_js
 node_js:
-- lts/boron
-- node
+  - lts/dubnium
+  - node
 after_script: bash <(curl -s https://codecov.io/bash)
 deploy:
   provider: releases
@@ -9,8 +9,8 @@ deploy:
   api_key:
     secure: mIhrrh340n/dBSEJC+JhPlQPKSz0d18nRj9vPlcU1eQGypTvvl6Liiy7BdyWYkv+cNiuF0gvkkBAvVhWUmtkKM+RcNGzDQVZ3dn4+lhEyAzgBajlsdPyQtwB6dw4Blx4w1O7O5m5Ely3yAW2MjKbG2UKra9fZ9DVLnpQLQ5R50qscWx0pYkq4vSNDdOMBjDaMJ7gD5svzwtGGRJjSXYyYmv/PVbZo9lrTBmRQD4yJqMwljPiCA5FMjR5WU1TdvciFsvHdO8IyBvjkjKqNfRuBWnlMLx5OteUNFytsGLd/ba3+K7vmXe+vyO4BrzZKI5YtdXhtBvlxh2oqUGS1QGGJqok4Pg1BMmH1W7BQvhGaGJDySRX8Kfap6lEJSWHuokuusdp2s53JEwY6dzEDZi6vHF0/lroIjzfdCewI2n2Nn/hgnZvXloq5iMtxk+rBPssxlvWFIbvVXw2s+CsIg9wFBswUxaKREj+Qcf5g0lg2ZQXXhtPRFGJ8WzSmfX2c230YGlb0SgLUfXrzEc7F4okMatZE6dkiVN27jD/1draPP3gjQBIeafPISWcT6AhST9ZOXKayyfX9n9zjrP7tLZuxPdcgQqeJPSn2bInhqOzw40EtUQBStpYQp7ICr7MDlOFuZqlC0wV7lGWYi4B4s0yOuYuBvNhfK4kNL/Opmdm0UQ=
   file:
-    - "hast-util-raw.js"
-    - "hast-util-raw.min.js"
+    - 'hast-util-raw.js'
+    - 'hast-util-raw.min.js'
   on:
     tags: true
     node: '9.0'
