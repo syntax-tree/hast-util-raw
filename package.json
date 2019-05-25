@@ -1,7 +1,7 @@
 {
   "name": "hast-util-raw",
   "version": "5.0.0",
-  "description": "Reparse a HAST tree",
+  "description": "Reparse a hast tree",
   "license": "MIT",
   "keywords": [
     "hast",

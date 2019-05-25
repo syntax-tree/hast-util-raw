@@ -11,13 +11,13 @@ var xtend = require('xtend')
 
 module.exports = wrap
 
-var IN_TEMPLATE_MODE = 'IN_TEMPLATE_MODE'
-var DATA_MODE = 'DATA_STATE'
-var CHARACTER_TOKEN = 'CHARACTER_TOKEN'
-var START_TAG_TOKEN = 'START_TAG_TOKEN'
-var END_TAG_TOKEN = 'END_TAG_TOKEN'
-var COMMENT_TOKEN = 'COMMENT_TOKEN'
-var DOCTYPE_TOKEN = 'DOCTYPE_TOKEN'
+var inTemplateMode = 'IN_TEMPLATE_MODE'
+var dataState = 'DATA_STATE'
+var characterToken = 'CHARACTER_TOKEN'
+var startTagToken = 'START_TAG_TOKEN'
+var endTagToken = 'END_TAG_TOKEN'
+var commentToken = 'COMMENT_TOKEN'
+var doctypeToken = 'DOCTYPE_TOKEN'
 
 var parseOptions = {
   sourceCodeLocationInfo: true,
@@ -43,7 +43,7 @@ function wrap(tree, file) {
 
   result = fromParse5(documentMode(tree) ? document() : fragment(), file)
 
-  /* Unpack if possible and when not given a `root`. */
+  // Unpack if possible and when not given a `root`.
   if (tree.type !== 'root' && result.children.length === 1) {
     return result.children[0]
   }
@@ -77,7 +77,7 @@ function wrap(tree, file) {
     }
 
     parser._bootstrap(mock, context)
-    parser._pushTmplInsertionMode(IN_TEMPLATE_MODE)
+    parser._pushTmplInsertionMode(inTemplateMode)
     parser._initTokenizerForFragmentParsing()
     parser._insertFakeRootElement()
     parser._resetInsertionMode()
@@ -137,17 +137,17 @@ function wrap(tree, file) {
     if (!empty) {
       parser._processToken(endTag(node))
 
-      // Put the parser back in data mode: some elements, like
-      // textareas and iframes, change the state.
-      // See syntax-tree/hast-util-raw/issues/7.
-      // See https://github.com/inikulin/parse5/blob/2528196/packages/parse5/lib/tokenizer/index.js#L222
-      tokenizer.state = DATA_MODE
+      // Put the parser back in the data state: some elements, like textareas
+      // and iframes, change the state.
+      // See <syntax-tree/hast-util-raw#7>.
+      // See <https://github.com/inikulin/parse5/blob/2528196/packages/parse5/lib/tokenizer/index.js#L222>.
+      tokenizer.state = dataState
     }
   }
 
   function text(node) {
     parser._processToken({
-      type: CHARACTER_TOKEN,
+      type: characterToken,
       chars: node.value,
       location: createParse5Location(node)
     })
@@ -157,7 +157,7 @@ function wrap(tree, file) {
     var p5 = toParse5(node)
 
     parser._processToken({
-      type: DOCTYPE_TOKEN,
+      type: doctypeToken,
       name: p5.name,
       forceQuirks: false,
       publicId: p5.publicId,
@@ -168,7 +168,7 @@ function wrap(tree, file) {
 
   function comment(node) {
     parser._processToken({
-      type: COMMENT_TOKEN,
+      type: commentToken,
       data: node.value,
       location: createParse5Location(node)
     })
@@ -179,7 +179,7 @@ function wrap(tree, file) {
     var token
 
     // Reset preprocessor:
-    // https://github.com/inikulin/parse5/blob/0491902/packages/parse5/lib/tokenizer/preprocessor.js
+    // See: <https://github.com/inikulin/parse5/blob/0491902/packages/parse5/lib/tokenizer/preprocessor.js>.
     preprocessor.html = null
     preprocessor.endOfChunkHit = false
     preprocessor.lastChunkWritten = false
@@ -187,7 +187,7 @@ function wrap(tree, file) {
     preprocessor.pos = -1
 
     // Reset preprocessor mixin:
-    // https://github.com/inikulin/parse5/blob/0491902/packages/parse5/lib/extensions/position-tracking/preprocessor-mixin.js
+    // See: <https://github.com/inikulin/parse5/blob/0491902/packages/parse5/lib/extensions/position-tracking/preprocessor-mixin.js>.
     posTracker.droppedBufferSize = 0
     posTracker.line = start.line
     posTracker.col = 1
@@ -196,18 +196,18 @@ function wrap(tree, file) {
     posTracker.droppedBufferSize = start.offset
 
     // Reset location tracker:
-    // https://github.com/inikulin/parse5/blob/0491902/packages/parse5/lib/extensions/location-info/tokenizer-mixin.js
+    // See: <https://github.com/inikulin/parse5/blob/0491902/packages/parse5/lib/extensions/location-info/tokenizer-mixin.js>.
     locationTracker.currentAttrLocation = null
     locationTracker.ctLoc = createParse5Location(node)
 
     // See the code for `parse` and `parseFragment`:
-    // https://github.com/inikulin/parse5/blob/0491902/packages/parse5/lib/parser/index.js#L371
+    // See: <https://github.com/inikulin/parse5/blob/0491902/packages/parse5/lib/parser/index.js#L371>.
     tokenizer.write(node.value)
     parser._runParsingLoop(null)
 
     // Process final characters if they’re still there after hibernating.
     // Similar to:
-    // https://github.com/inikulin/parse5/blob/3bfa7d9/packages/parse5/lib/extensions/location-info/tokenizer-mixin.js#L95
+    // See: <https://github.com/inikulin/parse5/blob/3bfa7d9/packages/parse5/lib/extensions/location-info/tokenizer-mixin.js#L95>.
     token = tokenizer.currentCharacterToken
 
     if (token) {
@@ -218,7 +218,7 @@ function wrap(tree, file) {
     }
 
     // Reset tokenizer:
-    // https://github.com/inikulin/parse5/blob/8b0048e/packages/parse5/lib/tokenizer/index.js#L215
+    // See: <https://github.com/inikulin/parse5/blob/8b0048e/packages/parse5/lib/tokenizer/index.js#L215>.
     tokenizer.currentToken = null
     tokenizer.currentCharacterToken = null
     tokenizer.currentAttr = null
@@ -231,7 +231,7 @@ function startTag(node) {
   location.startTag = xtend(location)
 
   return {
-    type: START_TAG_TOKEN,
+    type: startTagToken,
     tagName: node.tagName,
     selfClosing: false,
     attrs: attributes(node),
@@ -253,7 +253,7 @@ function endTag(node) {
   location.endTag = xtend(location)
 
   return {
-    type: END_TAG_TOKEN,
+    type: endTagToken,
     tagName: node.tagName,
     attrs: [],
     location: location
