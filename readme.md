@@ -67,6 +67,26 @@ Given a [**hast**][hast] [*tree*][tree] and an optional [vfile][] (for
 [positional info][position-information]), return a new parsed-again
 [**hast**][hast] [*tree*][tree].
 
+## Security
+
+Use of `hast-util-raw` can open you up to a [cross-site scripting (XSS)][xss]
+attack as `raw` nodes are unsafe.
+The following example shows how a raw node is used to inject a script that runs
+when loaded in a browser.
+
+```js
+raw(u('root', [u('raw', '<script>alert(1)</script>')]))
+```
+
+Yields:
+
+```html
+<script>alert(1)</script>
+```
+
+Do not use this utility in combination with user input or use
+[`hast-util-santize`][sanitize].
+
 ## Contribute
 
 See [`contributing.md` in `syntax-tree/.github`][contributing] for ways to get
@@ -136,3 +156,7 @@ abide by its terms.
 [remark-rehype]: https://github.com/remarkjs/remark-rehype
 
 [rehype-raw]: https://github.com/rehypejs/rehype-raw
+
+[xss]: https://en.wikipedia.org/wiki/Cross-site_scripting
+
+[sanitize]: https://github.com/syntax-tree/hast-util-sanitize

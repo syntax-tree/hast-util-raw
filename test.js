@@ -150,6 +150,22 @@ test('raw', function(t) {
     'should pass raw nodes through even after textarea (#3)'
   )
 
+  t.deepEqual(
+    raw(u('root', [u('raw', '<script>alert(1)</script>')])),
+    u('root', {data: {quirksMode: false}}, [
+      h('script', u('text', 'alert(1)'))
+    ]),
+    'security: raw nodes (unsafe)'
+  )
+
+  t.deepEqual(
+    raw(u('root', [h('script', u('text', 'alert(1)'))])),
+    u('root', {data: {quirksMode: false}}, [
+      h('script', u('text', 'alert(1)'))
+    ]),
+    'security: unsafe nodes (unsafe)'
+  )
+
   t.end()
 })
 
