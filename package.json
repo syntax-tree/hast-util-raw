@@ -1,12 +1,15 @@
 {
   "name": "hast-util-raw",
   "version": "5.0.1",
-  "description": "Reparse a hast tree",
+  "description": "hast utility to reparse a tree",
   "license": "MIT",
   "keywords": [
+    "unist",
     "hast",
+    "hast-util",
     "util",
     "utility",
+    "parse",
     "raw",
     "html"
   ],
