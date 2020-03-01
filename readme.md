@@ -87,6 +87,13 @@ Yields:
 Do not use this utility in combination with user input or use
 [`hast-util-santize`][sanitize].
 
+## Related
+
+*   [`mdast-util-to-hast`](https://github.com/syntax-tree/mdast-util-to-hast)
+    — transform mdast to hast
+*   [`rehype-raw`](https://github.com/rehypejs/rehype-raw)
+    — wrapper plugin for [rehype](https://github.com/rehypejs/rehype)
+
 ## Contribute
 
 See [`contributing.md` in `syntax-tree/.github`][contributing] for ways to get
