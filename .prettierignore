@@ -1,3 +1,5 @@
 coverage/
 hast-util-raw.js
 hast-util-raw.min.js
+*.json
+*.md

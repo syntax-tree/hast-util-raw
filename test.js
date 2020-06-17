@@ -9,9 +9,9 @@ var remark2rehype = require('remark-rehype')
 var stringify = require('rehype-stringify')
 var raw = require('.')
 
-test('raw', function(t) {
+test('raw', function (t) {
   t.throws(
-    function() {
+    function () {
       raw(u('unknown'))
     },
     /^Error: Cannot compile `unknown` node$/,
@@ -169,14 +169,14 @@ test('raw', function(t) {
   t.end()
 })
 
-test('integration', function(t) {
+test('integration', function (t) {
   unified()
     .use(parse)
-    .use(remark2rehype, {allowDangerousHTML: true})
-    .use(function() {
+    .use(remark2rehype, {allowDangerousHtml: true})
+    .use(function () {
       return raw
     })
-    .use(function() {
+    .use(function () {
       return transformer
       function transformer(tree) {
         t.deepEqual(
@@ -556,7 +556,7 @@ test('integration', function(t) {
         '<p>Hello, world!',
         ''
       ].join('\n'),
-      function(err, file) {
+      function (err, file) {
         t.ifErr(err, 'should not fail')
 
         t.equal(
