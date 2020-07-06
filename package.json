@@ -31,10 +31,10 @@
   "types": "types/index.d.ts",
   "dependencies": {
     "@types/hast": "^2.0.0",
-    "hast-util-from-parse5": "^5.0.0",
-    "hast-util-to-parse5": "^5.0.0",
+    "hast-util-from-parse5": "^6.0.0",
+    "hast-util-to-parse5": "^6.0.0",
     "html-void-elements": "^1.0.0",
-    "parse5": "^5.0.0",
+    "parse5": "^6.0.0",
     "unist-util-position": "^3.0.0",
     "vfile": "^4.0.0",
     "web-namespaces": "^1.0.0",
