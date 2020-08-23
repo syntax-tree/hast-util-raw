@@ -151,6 +151,23 @@ test('raw', function (t) {
   )
 
   t.deepEqual(
+    raw(u('root', [u('raw', '<template>a<b></b>c</template>')])),
+    u('root', {data: {quirksMode: false}}, [
+      u('element', {
+        tagName: 'template',
+        properties: {},
+        children: [],
+        content: u('root', {data: {quirksMode: false}}, [
+          u('text', 'a'),
+          h('b'),
+          u('text', 'c')
+        ])
+      })
+    ]),
+    'should support template nodes'
+  )
+
+  t.deepEqual(
     raw(u('root', [u('raw', '<script>alert(1)</script>')])),
     u('root', {data: {quirksMode: false}}, [
       h('script', u('text', 'alert(1)'))
