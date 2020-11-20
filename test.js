@@ -168,6 +168,24 @@ test('raw', function (t) {
   )
 
   t.deepEqual(
+    raw(u('root', [u('raw', '<i'), h('b')])),
+    u('root', {data: {quirksMode: false}}, [h('b')]),
+    'should discard broken HTML when a proper element node is found'
+  )
+
+  t.deepEqual(
+    raw(u('root', [u('raw', '<i'), u('text', 'a')])),
+    u('root', {data: {quirksMode: false}}, [u('text', 'a')]),
+    'should discard broken HTML when a proper text node is found'
+  )
+
+  t.deepEqual(
+    raw(u('root', [u('raw', '<i'), u('raw', '>'), h('b')])),
+    u('root', {data: {quirksMode: false}}, [h('i', [h('b')])]),
+    'should not discard HTML broken over several raw nodes'
+  )
+
+  t.deepEqual(
     raw(u('root', [u('raw', '<script>alert(1)</script>')])),
     u('root', {data: {quirksMode: false}}, [
       h('script', u('text', 'alert(1)'))

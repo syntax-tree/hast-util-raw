@@ -130,22 +130,19 @@ function wrap(tree, file) {
   function element(node) {
     var empty = voids.indexOf(node.tagName) !== -1
 
+    resetTokenizer()
     parser._processToken(startTag(node), ns.html)
 
     all(node.children)
 
     if (!empty) {
+      resetTokenizer()
       parser._processToken(endTag(node))
-
-      // Put the parser back in the data state: some elements, like textareas
-      // and iframes, change the state.
-      // See <syntax-tree/hast-util-raw#7>.
-      // See <https://github.com/inikulin/parse5/blob/2528196/packages/parse5/lib/tokenizer/index.js#L222>.
-      tokenizer.state = dataState
     }
   }
 
   function text(node) {
+    resetTokenizer()
     parser._processToken({
       type: characterToken,
       chars: node.value,
@@ -155,7 +152,7 @@ function wrap(tree, file) {
 
   function doctype(node) {
     var p5 = toParse5(node)
-
+    resetTokenizer()
     parser._processToken({
       type: doctypeToken,
       name: p5.name,
@@ -167,6 +164,7 @@ function wrap(tree, file) {
   }
 
   function comment(node) {
+    resetTokenizer()
     parser._processToken({
       type: commentToken,
       data: node.value,
@@ -182,35 +180,38 @@ function wrap(tree, file) {
     var token
 
     // Reset preprocessor:
-    // See: <https://github.com/inikulin/parse5/blob/0491902/packages/parse5/lib/tokenizer/preprocessor.js>.
+    // See: <https://github.com/inikulin/parse5/blob/9c683e1/packages/parse5/lib/tokenizer/preprocessor.js>.
     preprocessor.html = null
-    preprocessor.endOfChunkHit = false
-    preprocessor.lastChunkWritten = false
-    preprocessor.lastCharPos = -1
     preprocessor.pos = -1
+    preprocessor.lastGapPos = -1
+    preprocessor.lastCharPos = -1
+    preprocessor.gapStack = []
+    preprocessor.skipNextNewLine = false
+    preprocessor.lastChunkWritten = false
+    preprocessor.endOfChunkHit = false
 
     // Reset preprocessor mixin:
-    // See: <https://github.com/inikulin/parse5/blob/0491902/packages/parse5/lib/extensions/position-tracking/preprocessor-mixin.js>.
-    posTracker.droppedBufferSize = 0
-    posTracker.line = line
-    posTracker.col = 1
-    posTracker.offset = 0
-    posTracker.lineStartPos = -column + 1
+    // See: <https://github.com/inikulin/parse5/blob/9c683e1/packages/parse5/lib/extensions/position-tracking/preprocessor-mixin.js>.
+    posTracker.isEol = false
+    posTracker.lineStartPos = -column + 1 // Looks weird, but ensures we get correct positional info.
     posTracker.droppedBufferSize = offset
+    posTracker.offset = 0
+    posTracker.col = 1
+    posTracker.line = line
 
     // Reset location tracker:
-    // See: <https://github.com/inikulin/parse5/blob/0491902/packages/parse5/lib/extensions/location-info/tokenizer-mixin.js>.
+    // See: <https://github.com/inikulin/parse5/blob/9c683e1/packages/parse5/lib/extensions/location-info/tokenizer-mixin.js>.
     locationTracker.currentAttrLocation = null
     locationTracker.ctLoc = createParse5Location(node)
 
     // See the code for `parse` and `parseFragment`:
-    // See: <https://github.com/inikulin/parse5/blob/0491902/packages/parse5/lib/parser/index.js#L371>.
+    // See: <https://github.com/inikulin/parse5/blob/9c683e1/packages/parse5/lib/parser/index.js#L371>.
     tokenizer.write(node.value)
     parser._runParsingLoop(null)
 
     // Process final characters if they’re still there after hibernating.
     // Similar to:
-    // See: <https://github.com/inikulin/parse5/blob/3bfa7d9/packages/parse5/lib/extensions/location-info/tokenizer-mixin.js#L95>.
+    // See: <https://github.com/inikulin/parse5/blob/9c683e1/packages/parse5/lib/extensions/location-info/tokenizer-mixin.js#L95>.
     token = tokenizer.currentCharacterToken
 
     if (token) {
@@ -219,11 +220,26 @@ function wrap(tree, file) {
       token.location.endOffset = posTracker.offset + 1
       parser._processToken(token)
     }
+  }
 
+  function resetTokenizer() {
     // Reset tokenizer:
-    // See: <https://github.com/inikulin/parse5/blob/8b0048e/packages/parse5/lib/tokenizer/index.js#L215>.
-    tokenizer.currentToken = null
+    // See: <https://github.com/inikulin/parse5/blob/9c683e1/packages/parse5/lib/tokenizer/index.js#L218-L234>.
+    // Especially putting it back in the `data` state is useful: some elements,
+    // like textareas and iframes, change the state.
+    // See GH-7.
+    // But also if broken HTML is in `raw`, and then a correct element is given.
+    // See GH-11.
+    tokenizer.tokenQueue = []
+    tokenizer.state = dataState
+    tokenizer.returnState = ''
+    tokenizer.charRefCode = -1
+    tokenizer.tempBuff = []
+    tokenizer.lastStartTagName = ''
+    tokenizer.consumedAfterSnapshot = -1
+    tokenizer.active = false
     tokenizer.currentCharacterToken = null
+    tokenizer.currentToken = null
     tokenizer.currentAttr = null
   }
 }
