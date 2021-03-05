@@ -26,22 +26,22 @@ var parseOptions = {
 
 function wrap(tree, file) {
   var parser = new Parser(parseOptions)
-  var one = zwitch('type')
+  var one = zwitch('type', {
+    handlers: {
+      root: root,
+      element: element,
+      text: text,
+      comment: comment,
+      doctype: doctype,
+      raw: raw
+    },
+    unknown: unknown
+  })
   var tokenizer
   var preprocessor
   var posTracker
   var locationTracker
-  var result
-
-  one.handlers.root = root
-  one.handlers.element = element
-  one.handlers.text = text
-  one.handlers.comment = comment
-  one.handlers.doctype = doctype
-  one.handlers.raw = raw
-  one.unknown = unknown
-
-  result = fromParse5(documentMode(tree) ? document() : fragment(), file)
+  var result = fromParse5(documentMode(tree) ? document() : fragment(), file)
 
   // Unpack if possible and when not given a `root`.
   if (tree.type !== 'root' && result.children.length === 1) {
@@ -51,30 +51,21 @@ function wrap(tree, file) {
   return result
 
   function fragment() {
-    var context
-    var mock
-    var doc
-
-    context = {
+    var context = {
       nodeName: 'template',
       tagName: 'template',
       attrs: [],
       namespaceURI: ns.html,
       childNodes: []
     }
-
-    mock = {
+    var mock = {
       nodeName: 'documentmock',
       tagName: 'documentmock',
       attrs: [],
       namespaceURI: ns.html,
       childNodes: []
     }
-
-    doc = {
-      nodeName: '#document-fragment',
-      childNodes: []
-    }
+    var doc = {nodeName: '#document-fragment', childNodes: []}
 
     parser._bootstrap(mock, context)
     parser._pushTmplInsertionMode(inTemplateMode)
@@ -110,16 +101,13 @@ function wrap(tree, file) {
   }
 
   function all(nodes) {
-    var length = 0
     var index = -1
 
     /* istanbul ignore else - invalid nodes, see rehypejs/rehype-raw#7. */
     if (nodes) {
-      length = nodes.length
-    }
-
-    while (++index < length) {
-      one(nodes[index])
+      while (++index < nodes.length) {
+        one(nodes[index])
+      }
     }
   }
 
@@ -128,14 +116,12 @@ function wrap(tree, file) {
   }
 
   function element(node) {
-    var empty = voids.indexOf(node.tagName) !== -1
-
     resetTokenizer()
     parser._processToken(startTag(node), ns.html)
 
     all(node.children)
 
-    if (!empty) {
+    if (voids.indexOf(node.tagName) < 0) {
       resetTokenizer()
       parser._processToken(endTag(node))
     }
