@@ -61,11 +61,18 @@ Yields:
 
 ## API
 
-### `raw(tree[, file])`
+### `raw(tree[, file][, options])`
 
 Given a [**hast**][hast] [*tree*][tree] and an optional [vfile][] (for
 [positional info][position-information]), return a new parsed-again
 [**hast**][hast] [*tree*][tree].
+
+###### `options.passThrough`
+
+List of custom hast node types to pass through (keep) in hast
+(`Array.<string>`, default: `[]`).
+If the passed through nodes have children, those children are expected to be
+hast and will be handled.
 
 ## Security
 

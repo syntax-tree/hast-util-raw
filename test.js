@@ -186,6 +186,68 @@ test('raw', function (t) {
   )
 
   t.deepEqual(
+    raw(u('root', [u('custom', 'x')]), {passThrough: ['custom']}),
+    u('root', {data: {quirksMode: false}}, [u('custom', 'x')]),
+    'should support passing through nodes w/o children'
+  )
+
+  t.deepEqual(
+    raw(u('root', [u('custom', [u('raw', '<i>j</i>')])]), {
+      passThrough: ['custom']
+    }),
+    u('root', {data: {quirksMode: false}}, [u('custom', [h('i', 'j')])]),
+    'should support passing through nodes w/ `raw` children'
+  )
+
+  t.deepEqual(
+    raw(u('root', [u('custom', [u('comment', 'x')])]), {
+      passThrough: ['custom']
+    }),
+    u('root', {data: {quirksMode: false}}, [u('custom', [u('comment', 'x')])]),
+    'should support passing through nodes w/ `comment` children'
+  )
+
+  t.deepEqual(
+    raw(u('root', [u('custom', [])]), {
+      passThrough: ['custom']
+    }),
+    u('root', {data: {quirksMode: false}}, [u('custom', [])]),
+    'should support passing through nodes w/ `0` children'
+  )
+
+  t.deepEqual(
+    raw(u('root', [u('custom', [u('raw', '<x')])]), {
+      passThrough: ['custom']
+    }),
+    u('root', {data: {quirksMode: false}}, [u('custom', [])]),
+    'should support passing through nodes w/ broken raw children (1)'
+  )
+
+  t.deepEqual(
+    raw(u('root', [u('custom', [u('raw', '<x>')])]), {
+      passThrough: ['custom']
+    }),
+    u('root', {data: {quirksMode: false}}, [u('custom', [h('x')])]),
+    'should support passing through nodes w/ broken raw children (2)'
+  )
+
+  t.deepEqual(
+    raw(u('root', [u('custom', [u('raw', '</x>')])]), {
+      passThrough: ['custom']
+    }),
+    u('root', {data: {quirksMode: false}}, [u('custom', [])]),
+    'should support passing through nodes w/ broken raw children (3)'
+  )
+
+  t.deepEqual(
+    raw(u('root', [u('custom', [u('raw', '<x>')]), u('raw', '</x>')]), {
+      passThrough: ['custom']
+    }),
+    u('root', {data: {quirksMode: false}}, [u('custom', [h('x')])]),
+    'should support passing through nodes w/ broken raw children (4)'
+  )
+
+  t.deepEqual(
     raw(u('root', [u('raw', '<script>alert(1)</script>')])),
     u('root', {data: {quirksMode: false}}, [
       h('script', u('text', 'alert(1)'))

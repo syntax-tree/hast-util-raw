@@ -2,6 +2,7 @@
 
 var Parser = require('parse5/lib/parser')
 var pos = require('unist-util-position')
+var visit = require('unist-util-visit')
 var fromParse5 = require('hast-util-from-parse5')
 var toParse5 = require('hast-util-to-parse5')
 var voids = require('html-void-elements')
@@ -19,12 +20,9 @@ var endTagToken = 'END_TAG_TOKEN'
 var commentToken = 'COMMENT_TOKEN'
 var doctypeToken = 'DOCTYPE_TOKEN'
 
-var parseOptions = {
-  sourceCodeLocationInfo: true,
-  scriptingEnabled: false
-}
+var parseOptions = {sourceCodeLocationInfo: true, scriptingEnabled: false}
 
-function wrap(tree, file) {
+function wrap(tree, file, options) {
   var parser = new Parser(parseOptions)
   var one = zwitch('type', {
     handlers: {
@@ -37,11 +35,32 @@ function wrap(tree, file) {
     },
     unknown: unknown
   })
+  var stitches
   var tokenizer
   var preprocessor
   var posTracker
   var locationTracker
-  var result = fromParse5(documentMode(tree) ? document() : fragment(), file)
+  var result
+  var index
+
+  if (file && !('contents' in file)) {
+    options = file
+    file = undefined
+  }
+
+  if (options && options.passThrough) {
+    index = -1
+
+    while (++index < options.passThrough.length) {
+      one.handlers[options.passThrough[index]] = stitch
+    }
+  }
+
+  result = fromParse5(documentMode(tree) ? document() : fragment(), file)
+
+  if (stitches) {
+    visit(result, 'comment', mend)
+  }
 
   // Unpack if possible and when not given a `root`.
   if (tree.type !== 'root' && result.children.length === 1) {
@@ -49,6 +68,13 @@ function wrap(tree, file) {
   }
 
   return result
+
+  function mend(node, index, parent) {
+    if (node.value.stitch) {
+      parent.children[index] = node.value.stitch
+      return index
+    }
+  }
 
   function fragment() {
     var context = {
@@ -206,6 +232,27 @@ function wrap(tree, file) {
       token.location.endOffset = posTracker.offset + 1
       parser._processToken(token)
     }
+  }
+
+  function stitch(node) {
+    var clone = Object.assign({}, node)
+
+    stitches = true
+
+    // Recurse, because to somewhat handle `[<x>]</x>` (where `[]` denotes the
+    // passed through node).
+    if (node.children) {
+      clone.children = wrap(
+        {type: 'root', children: node.children},
+        file,
+        options
+      ).children
+    }
+
+    // Hack: `value` is supposed to be a string, but as none of the tools
+    // (`parse5` or `hast-util-from-parse5`) looks at it, we can pass nodes
+    // through.
+    comment({value: {stitch: clone}})
   }
 
   function resetTokenizer() {
