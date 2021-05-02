@@ -10,6 +10,7 @@ import {raw} from './index.js'
 test('raw', function (t) {
   t.throws(
     function () {
+      // @ts-ignore runtime.
       raw(u('unknown'))
     },
     /^Error: Cannot compile `unknown` node$/,
@@ -69,6 +70,7 @@ test('raw', function (t) {
 
   t.deepEqual(
     raw(
+      // @ts-ignore `raw` is nonstandard.
       u('root', [
         h('img', {alt: 'foo', src: 'bar.jpg'}),
         u('raw', '<img alt="foo" src="bar.jpg">')
@@ -82,6 +84,7 @@ test('raw', function (t) {
   )
 
   t.deepEqual(
+    // @ts-ignore `raw` is nonstandard.
     raw(u('root', [u('raw', '<p>Foo, bar!'), h('ol', h('li', 'baz'))])),
     u('root', {data: {quirksMode: false}}, [
       h('p', 'Foo, bar!'),
@@ -92,6 +95,7 @@ test('raw', function (t) {
 
   t.deepEqual(
     raw(
+      // @ts-ignore `raw` is nonstandard.
       u('root', [
         h('iframe', {height: 500, src: 'https://ddg.gg'}),
         u('raw', '<img alt="foo" src="bar.jpg">')
@@ -106,6 +110,7 @@ test('raw', function (t) {
 
   t.deepEqual(
     raw(
+      // @ts-ignore `raw` is nonstandard.
       u('root', [
         h('textarea', u('text', 'Some text that is <i>not</i> HTML.')),
         u('raw', '<img alt="foo" src="bar.jpg">')
@@ -120,6 +125,7 @@ test('raw', function (t) {
 
   t.deepEqual(
     raw(
+      // @ts-ignore `raw` is nonstandard.
       u('root', [
         u('raw', '<textarea>Some text that is <i>not</i> HTML.</textarea>'),
         u('raw', '<img alt="foo" src="bar.jpg">')
@@ -134,6 +140,7 @@ test('raw', function (t) {
 
   t.deepEqual(
     raw(
+      // @ts-ignore `raw` is nonstandard.
       u('root', [
         u('raw', '<textarea>'),
         u('text', 'Some text that is <i>not</i> HTML.'),
@@ -149,6 +156,7 @@ test('raw', function (t) {
   )
 
   t.deepEqual(
+    // @ts-ignore `raw` is nonstandard.
     raw(u('root', [u('raw', '<template>a<b></b>c</template>')])),
     u('root', {data: {quirksMode: false}}, [
       u('element', {
@@ -166,30 +174,35 @@ test('raw', function (t) {
   )
 
   t.deepEqual(
+    // @ts-ignore `raw` is nonstandard.
     raw(u('root', [u('raw', '<i'), h('b')])),
     u('root', {data: {quirksMode: false}}, [h('b')]),
     'should discard broken HTML when a proper element node is found'
   )
 
   t.deepEqual(
+    // @ts-ignore `raw` is nonstandard.
     raw(u('root', [u('raw', '<i'), u('text', 'a')])),
     u('root', {data: {quirksMode: false}}, [u('text', 'a')]),
     'should discard broken HTML when a proper text node is found'
   )
 
   t.deepEqual(
+    // @ts-ignore `raw` is nonstandard.
     raw(u('root', [u('raw', '<i'), u('raw', '>'), h('b')])),
     u('root', {data: {quirksMode: false}}, [h('i', [h('b')])]),
     'should not discard HTML broken over several raw nodes'
   )
 
   t.deepEqual(
+    // @ts-ignore runtime.
     raw(u('root', [u('custom', 'x')]), {passThrough: ['custom']}),
     u('root', {data: {quirksMode: false}}, [u('custom', 'x')]),
     'should support passing through nodes w/o children'
   )
 
   t.deepEqual(
+    // @ts-ignore runtime.
     raw(u('root', [u('custom', [u('raw', '<i>j</i>')])]), {
       passThrough: ['custom']
     }),
@@ -198,6 +211,7 @@ test('raw', function (t) {
   )
 
   t.deepEqual(
+    // @ts-ignore runtime.
     raw(u('root', [u('custom', [u('comment', 'x')])]), {
       passThrough: ['custom']
     }),
@@ -206,6 +220,7 @@ test('raw', function (t) {
   )
 
   t.deepEqual(
+    // @ts-ignore runtime.
     raw(u('root', [u('custom', [])]), {
       passThrough: ['custom']
     }),
@@ -214,6 +229,7 @@ test('raw', function (t) {
   )
 
   t.deepEqual(
+    // @ts-ignore runtime.
     raw(u('root', [u('custom', [u('raw', '<x')])]), {
       passThrough: ['custom']
     }),
@@ -222,6 +238,7 @@ test('raw', function (t) {
   )
 
   t.deepEqual(
+    // @ts-ignore runtime.
     raw(u('root', [u('custom', [u('raw', '<x>')])]), {
       passThrough: ['custom']
     }),
@@ -230,6 +247,7 @@ test('raw', function (t) {
   )
 
   t.deepEqual(
+    // @ts-ignore runtime.
     raw(u('root', [u('custom', [u('raw', '</x>')])]), {
       passThrough: ['custom']
     }),
@@ -238,6 +256,7 @@ test('raw', function (t) {
   )
 
   t.deepEqual(
+    // @ts-ignore runtime.
     raw(u('root', [u('custom', [u('raw', '<x>')]), u('raw', '</x>')]), {
       passThrough: ['custom']
     }),
@@ -246,6 +265,7 @@ test('raw', function (t) {
   )
 
   t.deepEqual(
+    // @ts-ignore runtime.
     raw(u('root', [u('raw', '<script>alert(1)</script>')])),
     u('root', {data: {quirksMode: false}}, [
       h('script', u('text', 'alert(1)'))
@@ -269,11 +289,12 @@ test('integration', function (t) {
     .use(remarkParse)
     .use(remarkRehype, {allowDangerousHtml: true})
     .use(function () {
-      return raw
+      // @ts-ignore hast is more specific than unist.
+      return (tree, file) => raw(tree, file)
     })
     .use(function () {
       return transformer
-      function transformer(tree) {
+      function transformer(/** @type {import('unist').Node} */ tree) {
         t.deepEqual(
           tree,
           {
