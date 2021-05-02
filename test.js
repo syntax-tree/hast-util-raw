@@ -1,13 +1,11 @@
-'use strict'
-
-var test = require('tape')
-var u = require('unist-builder')
-var h = require('hastscript')
-var unified = require('unified')
-var parse = require('remark-parse')
-var remark2rehype = require('remark-rehype')
-var stringify = require('rehype-stringify')
-var raw = require('.')
+import test from 'tape'
+import {u} from 'unist-builder'
+import {h} from 'hastscript'
+import unified from 'unified'
+import remarkParse from 'remark-parse'
+import remarkRehype from 'remark-rehype'
+import rehypeStringify from 'rehype-stringify'
+import {raw} from './index.js'
 
 test('raw', function (t) {
   t.throws(
@@ -63,7 +61,7 @@ test('raw', function (t) {
   t.deepEqual(
     raw(u('root', [u('doctype', {name: 'html'}), h('html', {lang: 'en'}, [])])),
     u('root', {data: {quirksMode: false}}, [
-      u('doctype', {name: 'html', public: null, system: null}),
+      u('doctype'),
       h('html', {lang: 'en'}, [h('head'), h('body')])
     ]),
     'should pass documents through (#2)'
@@ -268,8 +266,8 @@ test('raw', function (t) {
 
 test('integration', function (t) {
   unified()
-    .use(parse)
-    .use(remark2rehype, {allowDangerousHtml: true})
+    .use(remarkParse)
+    .use(remarkRehype, {allowDangerousHtml: true})
     .use(function () {
       return raw
     })
@@ -628,7 +626,7 @@ test('integration', function (t) {
         )
       }
     })
-    .use(stringify)
+    .use(rehypeStringify)
     .process(
       [
         '<i>Some title</i>',

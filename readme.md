@@ -22,6 +22,9 @@ If you’re working with [**remark**][remark] and/or
 
 ## Install
 
+This package is [ESM only](https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c):
+Node 12+ is needed to use it and it must be `import`ed instead of `require`d.
+
 [npm][]:
 
 ```sh
@@ -31,8 +34,8 @@ npm install hast-util-raw
 ## Use
 
 ```js
-var h = require('hastscript')
-var raw = require('hast-util-raw')
+import {h} from 'hastscript'
+import {raw} from 'hast-util-raw'
 
 var tree = h('div', [h('h1', ['Foo ', h('h2', 'Bar'), ' Baz'])])
 
@@ -60,6 +63,9 @@ Yields:
 ```
 
 ## API
+
+This package exports the following identifiers: `raw`.
+There is no default export.
 
 ### `raw(tree[, file][, options])`
 

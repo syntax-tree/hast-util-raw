@@ -1,16 +1,11 @@
-'use strict'
-
-var Parser = require('parse5/lib/parser')
-var pos = require('unist-util-position')
-var visit = require('unist-util-visit')
-var fromParse5 = require('hast-util-from-parse5')
-var toParse5 = require('hast-util-to-parse5')
-var voids = require('html-void-elements')
-var ns = require('web-namespaces')
-var zwitch = require('zwitch')
-var xtend = require('xtend')
-
-module.exports = wrap
+import Parser from 'parse5/lib/parser/index.js'
+import {pointStart, pointEnd} from 'unist-util-position'
+import {visit} from 'unist-util-visit'
+import {fromParse5} from 'hast-util-from-parse5'
+import {toParse5} from 'hast-util-to-parse5'
+import {htmlVoidElements} from 'html-void-elements'
+import {webNamespaces} from 'web-namespaces'
+import {zwitch} from 'zwitch'
 
 var inTemplateMode = 'IN_TEMPLATE_MODE'
 var dataState = 'DATA_STATE'
@@ -22,18 +17,18 @@ var doctypeToken = 'DOCTYPE_TOKEN'
 
 var parseOptions = {sourceCodeLocationInfo: true, scriptingEnabled: false}
 
-function wrap(tree, file, options) {
+export function raw(tree, file, options) {
   var parser = new Parser(parseOptions)
   var one = zwitch('type', {
     handlers: {
-      root: root,
-      element: element,
-      text: text,
-      comment: comment,
-      doctype: doctype,
-      raw: raw
+      root,
+      element,
+      text,
+      comment,
+      doctype,
+      raw: handleRaw
     },
-    unknown: unknown
+    unknown
   })
   var stitches
   var tokenizer
@@ -81,14 +76,14 @@ function wrap(tree, file, options) {
       nodeName: 'template',
       tagName: 'template',
       attrs: [],
-      namespaceURI: ns.html,
+      namespaceURI: webNamespaces.html,
       childNodes: []
     }
     var mock = {
       nodeName: 'documentmock',
       tagName: 'documentmock',
       attrs: [],
-      namespaceURI: ns.html,
+      namespaceURI: webNamespaces.html,
       childNodes: []
     }
     var doc = {nodeName: '#document-fragment', childNodes: []}
@@ -143,11 +138,11 @@ function wrap(tree, file, options) {
 
   function element(node) {
     resetTokenizer()
-    parser._processToken(startTag(node), ns.html)
+    parser._processToken(startTag(node), webNamespaces.html)
 
     all(node.children)
 
-    if (voids.indexOf(node.tagName) < 0) {
+    if (!htmlVoidElements.includes(node.tagName)) {
       resetTokenizer()
       parser._processToken(endTag(node))
     }
@@ -184,8 +179,8 @@ function wrap(tree, file, options) {
     })
   }
 
-  function raw(node) {
-    var start = pos.start(node)
+  function handleRaw(node) {
+    var start = pointStart(node)
     var line = start.line || 1
     var column = start.column || 1
     var offset = start.offset || 0
@@ -242,7 +237,7 @@ function wrap(tree, file, options) {
     // Recurse, because to somewhat handle `[<x>]</x>` (where `[]` denotes the
     // passed through node).
     if (node.children) {
-      clone.children = wrap(
+      clone.children = raw(
         {type: 'root', children: node.children},
         file,
         options
@@ -280,14 +275,14 @@ function wrap(tree, file, options) {
 function startTag(node) {
   var location = createParse5Location(node)
 
-  location.startTag = xtend(location)
+  location.startTag = Object.assign({}, location)
 
   return {
     type: startTagToken,
     tagName: node.tagName,
     selfClosing: false,
     attrs: attributes(node),
-    location: location
+    location
   }
 }
 
@@ -302,13 +297,13 @@ function attributes(node) {
 function endTag(node) {
   var location = createParse5Location(node)
 
-  location.endTag = xtend(location)
+  location.endTag = Object.assign({}, location)
 
   return {
     type: endTagToken,
     tagName: node.tagName,
     attrs: [],
-    location: location
+    location
   }
 }
 
@@ -323,8 +318,8 @@ function documentMode(node) {
 }
 
 function createParse5Location(node) {
-  var start = pos.start(node)
-  var end = pos.end(node)
+  var start = pointStart(node)
+  var end = pointEnd(node)
 
   return {
     startLine: start.line,
