@@ -7,9 +7,9 @@ import remarkRehype from 'remark-rehype'
 import rehypeStringify from 'rehype-stringify'
 import {raw} from './index.js'
 
-test('raw', function (t) {
+test('raw', (t) => {
   t.throws(
-    function () {
+    () => {
       // @ts-ignore runtime.
       raw(u('unknown'))
     },
@@ -284,15 +284,15 @@ test('raw', function (t) {
   t.end()
 })
 
-test('integration', function (t) {
+test('integration', (t) => {
   unified()
     .use(remarkParse)
     .use(remarkRehype, {allowDangerousHtml: true})
-    .use(function () {
+    .use(() => {
       // @ts-ignore hast is more specific than unist.
       return (tree, file) => raw(tree, file)
     })
-    .use(function () {
+    .use(() => {
       return transformer
       function transformer(/** @type {import('unist').Node} */ tree) {
         t.deepEqual(
@@ -672,7 +672,7 @@ test('integration', function (t) {
         '<p>Hello, world!',
         ''
       ].join('\n'),
-      function (error, file) {
+      (error, file) => {
         t.ifErr(error, 'should not fail')
 
         t.equal(

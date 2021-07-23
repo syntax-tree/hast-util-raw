@@ -37,11 +37,11 @@ npm install hast-util-raw
 import {h} from 'hastscript'
 import {raw} from 'hast-util-raw'
 
-var tree = h('div', [h('h1', ['Foo ', h('h2', 'Bar'), ' Baz'])])
+const tree = h('div', [h('h1', ['Foo ', h('h2', 'Bar'), ' Baz'])])
 
-var clean = raw(tree)
+const reformatted = raw(tree)
 
-console.log(clean)
+console.log(reformatted)
 ```
 
 Yields:
