@@ -1,7 +1,7 @@
 import test from 'tape'
 import {u} from 'unist-builder'
 import {h} from 'hastscript'
-import unified from 'unified'
+import {unified} from 'unified'
 import remarkParse from 'remark-parse'
 import remarkRehype from 'remark-rehype'
 import rehypeStringify from 'rehype-stringify'
@@ -288,10 +288,11 @@ test('integration', (t) => {
   unified()
     .use(remarkParse)
     .use(remarkRehype, {allowDangerousHtml: true})
-    .use(() => {
-      // @ts-expect-error hast is more specific than unist.
-      return (tree, file) => raw(tree, file)
-    })
+    .use(
+      () => (tree, file) =>
+        // @ts-expect-error hast is more specific than unist.
+        raw(tree, file)
+    )
     .use(() => {
       return transformer
       function transformer(/** @type {import('unist').Node} */ tree) {

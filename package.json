@@ -43,7 +43,7 @@
     "parse5": "^6.0.0",
     "unist-util-position": "^4.0.0",
     "unist-util-visit": "^3.0.0",
-    "vfile": "^4.0.0",
+    "vfile": "^5.0.0",
     "web-namespaces": "^2.0.0",
     "zwitch": "^2.0.0"
   },
@@ -61,7 +61,7 @@
     "tape": "^5.0.0",
     "type-coverage": "^2.0.0",
     "typescript": "^4.0.0",
-    "unified": "^9.0.0",
+    "unified": "^10.0.0",
     "unist-builder": "^3.0.0",
     "xo": "^0.39.0"
   },
