@@ -42,7 +42,7 @@
     "html-void-elements": "^2.0.0",
     "parse5": "^6.0.0",
     "unist-util-position": "^4.0.0",
-    "unist-util-visit": "^3.0.0",
+    "unist-util-visit": "^4.0.0",
     "vfile": "^5.0.0",
     "web-namespaces": "^2.0.0",
     "zwitch": "^2.0.0"
