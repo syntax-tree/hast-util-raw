@@ -285,6 +285,7 @@ test('raw', (t) => {
 })
 
 test('integration', (t) => {
+  // @ts-expect-error type remark plugins.
   unified()
     .use(remarkParse)
     .use(remarkRehype, {allowDangerousHtml: true})
