@@ -30,13 +30,13 @@
   "types": "index.d.ts",
   "files": [
     "lib/",
+    "complex-types.d.ts",
     "index.d.ts",
     "index.js"
   ],
   "dependencies": {
     "@types/hast": "^2.0.0",
     "@types/parse5": "^6.0.0",
-    "@types/unist": "^2.0.3",
     "hast-util-from-parse5": "^7.0.0",
     "hast-util-to-parse5": "^7.0.0",
     "html-void-elements": "^2.0.0",
