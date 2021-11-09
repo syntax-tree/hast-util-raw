@@ -154,6 +154,24 @@ test('raw', (t) => {
   )
 
   t.deepEqual(
+    raw(u('root', [u('raw', '&#123;and&#125;')])),
+    u('root', {data: {quirksMode: false}}, [u('text', '{and}')]),
+    'should pass character references through (decimal)'
+  )
+
+  t.deepEqual(
+    raw(u('root', [u('raw', '&lt;and&gt;')])),
+    u('root', {data: {quirksMode: false}}, [u('text', '<and>')]),
+    'should pass character references through (named)'
+  )
+
+  t.deepEqual(
+    raw(u('root', [u('raw', '&#x7b;and&#x7d;')])),
+    u('root', {data: {quirksMode: false}}, [u('text', '{and}')]),
+    'should pass character references through (hexadecimal)'
+  )
+
+  t.deepEqual(
     raw(u('root', [u('raw', '<template>a<b></b>c</template>')])),
     u('root', {data: {quirksMode: false}}, [
       u('element', {
