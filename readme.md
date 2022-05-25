@@ -76,7 +76,7 @@ Given a [**hast**][hast] [*tree*][tree] and an optional [vfile][] (for
 ###### `options.passThrough`
 
 List of custom hast node types to pass through (keep) in hast
-(`Array.<string>`, default: `[]`).
+(`Array<string>`, default: `[]`).
 If the passed through nodes have children, those children are expected to be
 hast and will be handled.
 
