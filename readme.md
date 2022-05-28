@@ -8,27 +8,79 @@
 [![Backers][backers-badge]][collective]
 [![Chat][chat-badge]][chat]
 
-[**hast**][hast] utility to parse the [*tree*][tree] again, now supporting
-embedded `raw` nodes.
+[hast][] utility to parse the tree and semistandard `raw` nodes (strings of
+HTML) again, keeping positional info okay.
 
-One of the reasons to do this is for “malformed” syntax trees: for example, say
-there’s an `h1` element in a `p` element, this utility will make them siblings.
+## Contents
 
-Another reason to do this is if raw HTML/XML is embedded in a syntax tree, which
-can occur when coming from Markdown using [`mdast-util-to-hast`][to-hast].
+*   [What is this?](#what-is-this)
+*   [When should I use this?](#when-should-i-use-this)
+*   [Install](#install)
+*   [Use](#use)
+*   [API](#api)
+    *   [`raw(tree[, file][, options])`](#rawtree-file-options)
+*   [Types](#types)
+*   [Compatibility](#compatibility)
+*   [Security](#security)
+*   [Related](#related)
+*   [Contribute](#contribute)
+*   [License](#license)
 
-If you’re working with [**remark**][remark] and/or
-[`remark-rehype`][remark-rehype], use [`rehype-raw`][rehype-raw] instead.
+## What is this?
+
+This package is a utility to parse a document again.
+It passes each node and embedded raw HTML through an HTML parser
+([`parse5`][parse5]), to recreate a tree exactly as how a browser would parse
+it, while keeping the original data and positional info intact.
+
+## When should I use this?
+
+This utility is particularly useful when coming from markdown and wanting to
+support HTML embedded inside that markdown (which requires passing
+`allowDangerousHtml: true` to `mdast-util-to-hast`).
+Markdown dictates how, say, a list item or emphasis can be parsed.
+We can use that to turn the markdown syntax tree into an HTML syntax tree.
+But markdown also dictates that things that look like HTML, are passed through
+untouched, even when it just looks like XML but doesn’t really make sense, so we
+can’t normally use these strings of “HTML” to create an HTML syntax tree.
+This utility can.
+It can be used to take those strings of HTML and include them into the syntax
+tree as actual nodes.
+
+If your final result is HTML and you trust content, then “strings” are fine
+(you can pass `allowDangerousHtml: true` to `hast-util-to-html`, which passes
+HTML through untouched).
+But there are two main cases where a proper syntax tree is preferred:
+
+*   hast utilities need a proper syntax tree as they operate on actual nodes to
+    inspect or transform things, they can’t operate on strings of HTML
+*   other output formats (React, MDX, etc) need actual nodes and can’t handle
+    strings of HTML
+
+The plugin [`rehype-raw`][rehype-raw] wraps this utility at a higher-level
+(easier) abstraction.
 
 ## Install
 
-This package is [ESM only](https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c):
-Node 12+ is needed to use it and it must be `import`ed instead of `require`d.
-
-[npm][]:
+This package is [ESM only][esm].
+In Node.js (version 12.20+, 14.14+, 16.0+, or 18.0+), install with [npm][]:
 
 ```sh
 npm install hast-util-raw
+```
+
+In Deno with [`esm.sh`][esmsh]:
+
+```js
+import {raw} from 'https://esm.sh/hast-util-raw@7'
+```
+
+In browsers with [`esm.sh`][esmsh]:
+
+```html
+<script type="module">
+  import {raw} from 'https://esm.sh/hast-util-raw@7?bundle'
+</script>
 ```
 
 ## Use
@@ -64,21 +116,58 @@ Yields:
 
 ## API
 
-This package exports the following identifiers: `raw`.
+This package exports the identifier `raw`.
 There is no default export.
 
 ### `raw(tree[, file][, options])`
 
-Given a [**hast**][hast] [*tree*][tree] and an optional [vfile][] (for
-[positional info][position-information]), return a new parsed-again
-[**hast**][hast] [*tree*][tree].
+Parse the tree and raw nodes (strings of HTML) again, keeping positional info
+okay.
+
+> 👉 **Note**: `tree` should have positional info and `file`, when given, must
+> be a [vfile][] corresponding to `tree`.
+
+##### `options`
+
+Configuration (optional).
 
 ###### `options.passThrough`
 
-List of custom hast node types to pass through (keep) in hast
-(`Array<string>`, default: `[]`).
+List of custom hast node types to pass through (keep) in hast (`Array<string>`,
+default: `[]`).
 If the passed through nodes have children, those children are expected to be
-hast and will be handled.
+hast and will be handled by this utility.
+
+## Types
+
+This package is fully typed with [TypeScript][].
+It exports the additional type `Options`.
+
+It also registers the `Raw` node type with `@types/hast`.
+If you’re working with the syntax tree, make sure to import this utility
+somewhere in your types, as that registers the new node types in the tree.
+
+```js
+/**
+ * @typedef {import('hast-util-raw')}
+ */
+
+import {visit} from 'unist-util-visit'
+
+/** @type {import('hast').Root} */
+const tree = getHastNodeSomeHow()
+
+visit(tree, (node) => {
+  // `node` can now be a `raw` node.
+})
+```
+
+## Compatibility
+
+Projects maintained by the unified collective are compatible with all maintained
+versions of Node.js.
+As of now, that is Node.js 12.20+, 14.14+, 16.0+, and 18.0+.
+Our projects sometimes work with older versions, but this is not guaranteed.
 
 ## Security
 
@@ -97,20 +186,20 @@ Yields:
 <script>alert(1)</script>
 ```
 
-Do not use this utility in combination with user input or use
-[`hast-util-santize`][sanitize].
+Either do not use this utility in combination with user input, or use
+[`hast-util-santize`][hast-util-sanitize].
 
 ## Related
 
 *   [`mdast-util-to-hast`](https://github.com/syntax-tree/mdast-util-to-hast)
     — transform mdast to hast
 *   [`rehype-raw`](https://github.com/rehypejs/rehype-raw)
-    — wrapper plugin for [rehype](https://github.com/rehypejs/rehype)
+    — rehype plugin
 
 ## Contribute
 
-See [`contributing.md` in `syntax-tree/.github`][contributing] for ways to get
-started.
+See [`contributing.md`][contributing] in [`syntax-tree/.github`][health] for
+ways to get started.
 See [`support.md`][support] for ways to get help.
 
 This project has a [code of conduct][coc].
@@ -151,32 +240,32 @@ abide by its terms.
 
 [npm]: https://docs.npmjs.com/cli/install
 
+[esm]: https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c
+
+[esmsh]: https://esm.sh
+
+[typescript]: https://www.typescriptlang.org
+
 [license]: license
 
 [author]: https://wooorm.com
 
-[contributing]: https://github.com/syntax-tree/.github/blob/HEAD/contributing.md
+[health]: https://github.com/syntax-tree/.github
 
-[support]: https://github.com/syntax-tree/.github/blob/HEAD/support.md
+[contributing]: https://github.com/syntax-tree/.github/blob/main/contributing.md
 
-[coc]: https://github.com/syntax-tree/.github/blob/HEAD/code-of-conduct.md
+[support]: https://github.com/syntax-tree/.github/blob/main/support.md
 
-[tree]: https://github.com/syntax-tree/unist#tree
-
-[position-information]: https://github.com/syntax-tree/unist#positional-information
-
-[hast]: https://github.com/syntax-tree/hast
-
-[to-hast]: https://github.com/syntax-tree/mdast-util-to-hast
-
-[vfile]: https://github.com/vfile/vfile
-
-[remark]: https://github.com/remarkjs/remark
-
-[remark-rehype]: https://github.com/remarkjs/remark-rehype
-
-[rehype-raw]: https://github.com/rehypejs/rehype-raw
+[coc]: https://github.com/syntax-tree/.github/blob/main/code-of-conduct.md
 
 [xss]: https://en.wikipedia.org/wiki/Cross-site_scripting
 
-[sanitize]: https://github.com/syntax-tree/hast-util-sanitize
+[hast]: https://github.com/syntax-tree/hast
+
+[hast-util-sanitize]: https://github.com/syntax-tree/hast-util-sanitize
+
+[vfile]: https://github.com/vfile/vfile
+
+[rehype-raw]: https://github.com/rehypejs/rehype-raw
+
+[parse5]: https://github.com/inikulin/parse5
