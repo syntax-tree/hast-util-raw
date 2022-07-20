@@ -271,6 +271,12 @@ test('raw', (t) => {
   )
 
   t.deepEqual(
+    raw(u('root', [u('raw', 'aaa'), u('raw', '<x>')])),
+    u('root', {data: {quirksMode: false}}, [u('text', 'aaa'), h('x')]),
+    'should support raw text and then another raw node'
+  )
+
+  t.deepEqual(
     raw(u('root', [u('raw', '<script>alert(1)</script>')])),
     u('root', {data: {quirksMode: false}}, [
       h('script', u('text', 'alert(1)'))
