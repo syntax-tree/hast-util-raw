@@ -1,5 +1,7 @@
 import type {Parent, Literal} from 'hast'
 
+/* eslint-disable @typescript-eslint/consistent-type-definitions */
+
 export interface CustomParent extends Parent {
   type: 'customParent'
 }
@@ -19,3 +21,5 @@ declare module 'hast' {
     customParent: CustomParent
   }
 }
+
+/* eslint-enable @typescript-eslint/consistent-type-definitions */
