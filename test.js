@@ -5,7 +5,7 @@
 
 import test from 'tape'
 import {u} from 'unist-builder'
-import {h} from 'hastscript'
+import {h, s} from 'hastscript'
 import {unified} from 'unified'
 import remarkParse from 'remark-parse'
 import remarkRehype from 'remark-rehype'
@@ -186,6 +186,14 @@ test('raw', (t) => {
       })
     ]),
     'should support template nodes'
+  )
+
+  t.deepEqual(
+    raw(u('root', [h('p', [h('svg', [s('foreignObject', [h('div')])])])])),
+    u('root', {data: {quirksMode: false}}, [
+      h('p', [h('svg', [s('foreignObject', [h('div')])])])
+    ]),
+    'should support HTML in SVG in HTML'
   )
 
   t.deepEqual(
