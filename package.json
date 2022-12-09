@@ -1,6 +1,6 @@
 {
   "name": "hast-util-raw",
-  "version": "7.2.2",
+  "version": "7.2.3",
   "description": "hast utility to reparse a tree",
   "license": "MIT",
   "keywords": [
