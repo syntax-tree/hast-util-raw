@@ -337,7 +337,7 @@ test('integration', () => {
   const mdast = fromMarkdown(doc)
   const hast = toHast(mdast, {allowDangerousHtml: true})
   assert(hast, 'should transform to hast')
-  const hast2 = raw(hast, new VFile(doc))
+  const hast2 = raw(hast, {file: new VFile(doc)})
 
   assert.deepEqual(
     hast2,
