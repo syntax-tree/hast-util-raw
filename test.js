@@ -359,7 +359,7 @@ test('integration', (t) => {
                   value: 'Hello, world!\n',
                   position: {
                     start: {line: 3, column: 4, offset: 22},
-                    end: null
+                    end: undefined
                   }
                 }
               ],
@@ -645,13 +645,13 @@ test('integration', (t) => {
                   value: 'Hello, world!',
                   position: {
                     start: {line: 20, column: 4, offset: 256},
-                    end: {line: 20, column: 17, offset: 270}
+                    end: {line: 20, column: 17, offset: 269}
                   }
                 }
               ],
               position: {
                 start: {line: 20, column: 1, offset: 253},
-                end: {line: 20, column: 17, offset: 270}
+                end: {line: 20, column: 17, offset: 269}
               }
             }
           ],
