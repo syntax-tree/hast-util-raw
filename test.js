@@ -359,7 +359,7 @@ test('integration', (t) => {
                   value: 'Hello, world!\n',
                   position: {
                     start: {line: 3, column: 4, offset: 22},
-                    end: null
+                    end: undefined
                   }
                 }
               ],
