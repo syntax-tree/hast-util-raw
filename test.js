@@ -1,6 +1,6 @@
 /**
  * @typedef {import('hast').Root} Root
- * @typedef {import('./test-types')} DoNotTouchAsThisImportIncludesCustomInTree
+ * @typedef {import('./test-types.js')} DoNotTouchAsThisImportIncludesCustomNodesInTree
  */
 
 import test from 'tape'
