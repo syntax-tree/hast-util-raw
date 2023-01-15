@@ -5,12 +5,12 @@
 
 import assert from 'node:assert/strict'
 import test from 'node:test'
+import {VFile} from 'vfile'
 import {u} from 'unist-builder'
 import {h, s} from 'hastscript'
-import {unified} from 'unified'
-import remarkParse from 'remark-parse'
-import remarkRehype from 'remark-rehype'
-import rehypeStringify from 'rehype-stringify'
+import {fromMarkdown} from 'mdast-util-from-markdown'
+import {toHast} from 'mdast-util-to-hast'
+import {toHtml} from 'hast-util-to-html'
 import {raw} from './index.js'
 import * as mod from './index.js'
 
@@ -310,42 +310,56 @@ test('raw', () => {
 })
 
 test('integration', () => {
-  unified()
-    .use(remarkParse)
-    .use(remarkRehype, {allowDangerousHtml: true})
-    .use(
-      /** @type {import('unified').Plugin<[], Root, Root>} */
-      // @ts-expect-error: assume a given root yields a root.
-      () => (tree, file) => raw(tree, file)
-    )
-    .use(() => (tree) => {
-      assert.deepEqual(
-        tree,
+  const doc = [
+    '<i>Some title</i>',
+    '',
+    '<p>Hello, world!',
+    '',
+    '*   This',
+    '*   Is',
+    '*   A',
+    '*   List',
+    '',
+    'A mix of *markdown* and <em>HTML</em>.',
+    '',
+    '***',
+    '',
+    '![an image](https://example.com/favicon.ico "title")',
+    '',
+    '<svg><rect/></svg>',
+    '',
+    '<div id="foo" class="bar baz"><img src="a" alt=bar>alfred</div>',
+    '',
+    '<p>Hello, world!',
+    ''
+  ].join('\n')
+
+  const mdast = fromMarkdown(doc)
+  const hast = toHast(mdast, {allowDangerousHtml: true})
+  assert(hast, 'should transform to hast')
+  const hast2 = raw(hast, new VFile(doc))
+
+  assert.deepEqual(
+    hast2,
+    {
+      type: 'root',
+      children: [
         {
-          type: 'root',
+          type: 'element',
+          tagName: 'p',
+          properties: {},
           children: [
             {
               type: 'element',
-              tagName: 'p',
+              tagName: 'i',
               properties: {},
               children: [
                 {
-                  type: 'element',
-                  tagName: 'i',
-                  properties: {},
-                  children: [
-                    {
-                      type: 'text',
-                      value: 'Some title',
-                      position: {
-                        start: {line: 1, column: 4, offset: 3},
-                        end: {line: 1, column: 14, offset: 13}
-                      }
-                    }
-                  ],
+                  type: 'text',
+                  value: 'Some title',
                   position: {
-                    start: {line: 1, column: 1, offset: 0},
-                    end: {line: 1, column: 18, offset: 17}
+                    start: {line: 1, column: 4, offset: 3},
+                    end: {line: 1, column: 14, offset: 13}
                   }
                 }
               ],
@@ -353,255 +367,255 @@ test('integration', () => {
                 start: {line: 1, column: 1, offset: 0},
                 end: {line: 1, column: 18, offset: 17}
               }
-            },
+            }
+          ],
+          position: {
+            start: {line: 1, column: 1, offset: 0},
+            end: {line: 1, column: 18, offset: 17}
+          }
+        },
+        {type: 'text', value: '\n'},
+        {
+          type: 'element',
+          tagName: 'p',
+          properties: {},
+          children: [
+            {
+              type: 'text',
+              value: 'Hello, world!\n',
+              position: {
+                start: {line: 3, column: 4, offset: 22},
+                end: undefined
+              }
+            }
+          ],
+          position: {
+            start: {line: 3, column: 1, offset: 19},
+            end: {line: 5, column: 1, offset: 37}
+          }
+        },
+        {
+          type: 'element',
+          tagName: 'ul',
+          properties: {},
+          children: [
             {type: 'text', value: '\n'},
             {
               type: 'element',
-              tagName: 'p',
+              tagName: 'li',
               properties: {},
               children: [
                 {
                   type: 'text',
-                  value: 'Hello, world!\n',
+                  value: 'This',
                   position: {
-                    start: {line: 3, column: 4, offset: 22},
-                    end: undefined
-                  }
-                }
-              ],
-              position: {
-                start: {line: 3, column: 1, offset: 19},
-                end: {line: 5, column: 1, offset: 37}
-              }
-            },
-            {
-              type: 'element',
-              tagName: 'ul',
-              properties: {},
-              children: [
-                {type: 'text', value: '\n'},
-                {
-                  type: 'element',
-                  tagName: 'li',
-                  properties: {},
-                  children: [
-                    {
-                      type: 'text',
-                      value: 'This',
-                      position: {
-                        start: {line: 5, column: 5, offset: 41},
-                        end: {line: 5, column: 9, offset: 45}
-                      }
-                    }
-                  ],
-                  position: {
-                    start: {line: 5, column: 1, offset: 37},
+                    start: {line: 5, column: 5, offset: 41},
                     end: {line: 5, column: 9, offset: 45}
                   }
-                },
-                {type: 'text', value: '\n'},
-                {
-                  type: 'element',
-                  tagName: 'li',
-                  properties: {},
-                  children: [
-                    {
-                      type: 'text',
-                      value: 'Is',
-                      position: {
-                        start: {line: 6, column: 5, offset: 50},
-                        end: {line: 6, column: 7, offset: 52}
-                      }
-                    }
-                  ],
-                  position: {
-                    start: {line: 6, column: 1, offset: 46},
-                    end: {line: 6, column: 7, offset: 52}
-                  }
-                },
-                {type: 'text', value: '\n'},
-                {
-                  type: 'element',
-                  tagName: 'li',
-                  properties: {},
-                  children: [
-                    {
-                      type: 'text',
-                      value: 'A',
-                      position: {
-                        start: {line: 7, column: 5, offset: 57},
-                        end: {line: 7, column: 6, offset: 58}
-                      }
-                    }
-                  ],
-                  position: {
-                    start: {line: 7, column: 1, offset: 53},
-                    end: {line: 7, column: 6, offset: 58}
-                  }
-                },
-                {type: 'text', value: '\n'},
-                {
-                  type: 'element',
-                  tagName: 'li',
-                  properties: {},
-                  children: [
-                    {
-                      type: 'text',
-                      value: 'List',
-                      position: {
-                        start: {line: 8, column: 5, offset: 63},
-                        end: {line: 8, column: 9, offset: 67}
-                      }
-                    }
-                  ],
-                  position: {
-                    start: {line: 8, column: 1, offset: 59},
-                    end: {line: 8, column: 9, offset: 67}
-                  }
-                },
-                {type: 'text', value: '\n'}
+                }
               ],
               position: {
                 start: {line: 5, column: 1, offset: 37},
+                end: {line: 5, column: 9, offset: 45}
+              }
+            },
+            {type: 'text', value: '\n'},
+            {
+              type: 'element',
+              tagName: 'li',
+              properties: {},
+              children: [
+                {
+                  type: 'text',
+                  value: 'Is',
+                  position: {
+                    start: {line: 6, column: 5, offset: 50},
+                    end: {line: 6, column: 7, offset: 52}
+                  }
+                }
+              ],
+              position: {
+                start: {line: 6, column: 1, offset: 46},
+                end: {line: 6, column: 7, offset: 52}
+              }
+            },
+            {type: 'text', value: '\n'},
+            {
+              type: 'element',
+              tagName: 'li',
+              properties: {},
+              children: [
+                {
+                  type: 'text',
+                  value: 'A',
+                  position: {
+                    start: {line: 7, column: 5, offset: 57},
+                    end: {line: 7, column: 6, offset: 58}
+                  }
+                }
+              ],
+              position: {
+                start: {line: 7, column: 1, offset: 53},
+                end: {line: 7, column: 6, offset: 58}
+              }
+            },
+            {type: 'text', value: '\n'},
+            {
+              type: 'element',
+              tagName: 'li',
+              properties: {},
+              children: [
+                {
+                  type: 'text',
+                  value: 'List',
+                  position: {
+                    start: {line: 8, column: 5, offset: 63},
+                    end: {line: 8, column: 9, offset: 67}
+                  }
+                }
+              ],
+              position: {
+                start: {line: 8, column: 1, offset: 59},
                 end: {line: 8, column: 9, offset: 67}
               }
             },
-            {type: 'text', value: '\n'},
+            {type: 'text', value: '\n'}
+          ],
+          position: {
+            start: {line: 5, column: 1, offset: 37},
+            end: {line: 8, column: 9, offset: 67}
+          }
+        },
+        {type: 'text', value: '\n'},
+        {
+          type: 'element',
+          tagName: 'p',
+          properties: {},
+          children: [
             {
-              type: 'element',
-              tagName: 'p',
-              properties: {},
-              children: [
-                {
-                  type: 'text',
-                  value: 'A mix of ',
-                  position: {
-                    start: {line: 10, column: 1, offset: 69},
-                    end: {line: 10, column: 10, offset: 78}
-                  }
-                },
-                {
-                  type: 'element',
-                  tagName: 'em',
-                  properties: {},
-                  children: [
-                    {
-                      type: 'text',
-                      value: 'markdown',
-                      position: {
-                        start: {line: 10, column: 11, offset: 79},
-                        end: {line: 10, column: 19, offset: 87}
-                      }
-                    }
-                  ],
-                  position: {
-                    start: {line: 10, column: 10, offset: 78},
-                    end: {line: 10, column: 20, offset: 88}
-                  }
-                },
-                {
-                  type: 'text',
-                  value: ' and ',
-                  position: {
-                    start: {line: 10, column: 20, offset: 88},
-                    end: {line: 10, column: 25, offset: 93}
-                  }
-                },
-                {
-                  type: 'element',
-                  tagName: 'em',
-                  properties: {},
-                  children: [
-                    {
-                      type: 'text',
-                      value: 'HTML',
-                      position: {
-                        start: {line: 10, column: 29, offset: 97},
-                        end: {line: 10, column: 33, offset: 101}
-                      }
-                    }
-                  ],
-                  position: {
-                    start: {line: 10, column: 25, offset: 93},
-                    end: {line: 10, column: 38, offset: 106}
-                  }
-                },
-                {
-                  type: 'text',
-                  value: '.',
-                  position: {
-                    start: {line: 10, column: 38, offset: 106},
-                    end: {line: 10, column: 39, offset: 107}
-                  }
-                }
-              ],
+              type: 'text',
+              value: 'A mix of ',
               position: {
                 start: {line: 10, column: 1, offset: 69},
-                end: {line: 10, column: 39, offset: 107}
+                end: {line: 10, column: 10, offset: 78}
               }
             },
-            {type: 'text', value: '\n'},
             {
               type: 'element',
-              tagName: 'hr',
-              properties: {},
-              children: [],
-              position: {
-                start: {line: 12, column: 1, offset: 109},
-                end: {line: 12, column: 4, offset: 112}
-              }
-            },
-            {type: 'text', value: '\n'},
-            {
-              type: 'element',
-              tagName: 'p',
+              tagName: 'em',
               properties: {},
               children: [
                 {
-                  type: 'element',
-                  tagName: 'img',
-                  properties: {
-                    src: 'https://example.com/favicon.ico',
-                    alt: 'an image',
-                    title: 'title'
-                  },
-                  children: [],
+                  type: 'text',
+                  value: 'markdown',
                   position: {
-                    start: {line: 14, column: 1, offset: 114},
-                    end: {line: 14, column: 53, offset: 166}
+                    start: {line: 10, column: 11, offset: 79},
+                    end: {line: 10, column: 19, offset: 87}
                   }
                 }
               ],
+              position: {
+                start: {line: 10, column: 10, offset: 78},
+                end: {line: 10, column: 20, offset: 88}
+              }
+            },
+            {
+              type: 'text',
+              value: ' and ',
+              position: {
+                start: {line: 10, column: 20, offset: 88},
+                end: {line: 10, column: 25, offset: 93}
+              }
+            },
+            {
+              type: 'element',
+              tagName: 'em',
+              properties: {},
+              children: [
+                {
+                  type: 'text',
+                  value: 'HTML',
+                  position: {
+                    start: {line: 10, column: 29, offset: 97},
+                    end: {line: 10, column: 33, offset: 101}
+                  }
+                }
+              ],
+              position: {
+                start: {line: 10, column: 25, offset: 93},
+                end: {line: 10, column: 38, offset: 106}
+              }
+            },
+            {
+              type: 'text',
+              value: '.',
+              position: {
+                start: {line: 10, column: 38, offset: 106},
+                end: {line: 10, column: 39, offset: 107}
+              }
+            }
+          ],
+          position: {
+            start: {line: 10, column: 1, offset: 69},
+            end: {line: 10, column: 39, offset: 107}
+          }
+        },
+        {type: 'text', value: '\n'},
+        {
+          type: 'element',
+          tagName: 'hr',
+          properties: {},
+          children: [],
+          position: {
+            start: {line: 12, column: 1, offset: 109},
+            end: {line: 12, column: 4, offset: 112}
+          }
+        },
+        {type: 'text', value: '\n'},
+        {
+          type: 'element',
+          tagName: 'p',
+          properties: {},
+          children: [
+            {
+              type: 'element',
+              tagName: 'img',
+              properties: {
+                src: 'https://example.com/favicon.ico',
+                alt: 'an image',
+                title: 'title'
+              },
+              children: [],
               position: {
                 start: {line: 14, column: 1, offset: 114},
                 end: {line: 14, column: 53, offset: 166}
               }
-            },
-            {type: 'text', value: '\n'},
+            }
+          ],
+          position: {
+            start: {line: 14, column: 1, offset: 114},
+            end: {line: 14, column: 53, offset: 166}
+          }
+        },
+        {type: 'text', value: '\n'},
+        {
+          type: 'element',
+          tagName: 'p',
+          properties: {},
+          children: [
             {
               type: 'element',
-              tagName: 'p',
+              tagName: 'svg',
               properties: {},
               children: [
                 {
                   type: 'element',
-                  tagName: 'svg',
+                  tagName: 'rect',
                   properties: {},
-                  children: [
-                    {
-                      type: 'element',
-                      tagName: 'rect',
-                      properties: {},
-                      children: [],
-                      position: {
-                        start: {line: 16, column: 6, offset: 173},
-                        end: {line: 16, column: 13, offset: 180}
-                      }
-                    }
-                  ],
+                  children: [],
                   position: {
-                    start: {line: 16, column: 1, offset: 168},
-                    end: {line: 16, column: 19, offset: 186}
+                    start: {line: 16, column: 6, offset: 173},
+                    end: {line: 16, column: 13, offset: 180}
                   }
                 }
               ],
@@ -609,114 +623,91 @@ test('integration', () => {
                 start: {line: 16, column: 1, offset: 168},
                 end: {line: 16, column: 19, offset: 186}
               }
-            },
-            {type: 'text', value: '\n'},
+            }
+          ],
+          position: {
+            start: {line: 16, column: 1, offset: 168},
+            end: {line: 16, column: 19, offset: 186}
+          }
+        },
+        {type: 'text', value: '\n'},
+        {
+          type: 'element',
+          tagName: 'div',
+          properties: {id: 'foo', className: ['bar', 'baz']},
+          children: [
             {
               type: 'element',
-              tagName: 'div',
-              properties: {id: 'foo', className: ['bar', 'baz']},
-              children: [
-                {
-                  type: 'element',
-                  tagName: 'img',
-                  properties: {src: 'a', alt: 'bar'},
-                  children: [],
-                  position: {
-                    start: {line: 18, column: 31, offset: 218},
-                    end: {line: 18, column: 52, offset: 239}
-                  }
-                },
-                {
-                  type: 'text',
-                  value: 'alfred',
-                  position: {
-                    start: {line: 18, column: 52, offset: 239},
-                    end: {line: 18, column: 58, offset: 245}
-                  }
-                }
-              ],
+              tagName: 'img',
+              properties: {src: 'a', alt: 'bar'},
+              children: [],
               position: {
-                start: {line: 18, column: 1, offset: 188},
-                end: {line: 18, column: 64, offset: 251}
+                start: {line: 18, column: 31, offset: 218},
+                end: {line: 18, column: 52, offset: 239}
               }
             },
-            {type: 'text', value: '\n'},
             {
-              type: 'element',
-              tagName: 'p',
-              properties: {},
-              children: [
-                {
-                  type: 'text',
-                  value: 'Hello, world!',
-                  position: {
-                    start: {line: 20, column: 4, offset: 256},
-                    end: {line: 20, column: 17, offset: 269}
-                  }
-                }
-              ],
+              type: 'text',
+              value: 'alfred',
               position: {
-                start: {line: 20, column: 1, offset: 253},
+                start: {line: 18, column: 52, offset: 239},
+                end: {line: 18, column: 58, offset: 245}
+              }
+            }
+          ],
+          position: {
+            start: {line: 18, column: 1, offset: 188},
+            end: {line: 18, column: 64, offset: 251}
+          }
+        },
+        {type: 'text', value: '\n'},
+        {
+          type: 'element',
+          tagName: 'p',
+          properties: {},
+          children: [
+            {
+              type: 'text',
+              value: 'Hello, world!',
+              position: {
+                start: {line: 20, column: 4, offset: 256},
                 end: {line: 20, column: 17, offset: 269}
               }
             }
           ],
-          data: {quirksMode: false},
           position: {
-            start: {line: 1, column: 1, offset: 0},
-            end: {line: 21, column: 1, offset: 270}
+            start: {line: 20, column: 1, offset: 253},
+            end: {line: 20, column: 17, offset: 269}
           }
-        },
-        'should equal the fixture tree'
-      )
-    })
-    .use(rehypeStringify)
-    .process(
-      [
-        '<i>Some title</i>',
-        '',
-        '<p>Hello, world!',
-        '',
-        '*   This',
-        '*   Is',
-        '*   A',
-        '*   List',
-        '',
-        'A mix of *markdown* and <em>HTML</em>.',
-        '',
-        '***',
-        '',
-        '![an image](https://example.com/favicon.ico "title")',
-        '',
-        '<svg><rect/></svg>',
-        '',
-        '<div id="foo" class="bar baz"><img src="a" alt=bar>alfred</div>',
-        '',
-        '<p>Hello, world!',
-        ''
-      ].join('\n'),
-      (error, file) => {
-        assert.ifError(error)
-        assert.equal(
-          String(file),
-          [
-            '<p><i>Some title</i></p>',
-            '<p>Hello, world!',
-            '</p><ul>',
-            '<li>This</li>',
-            '<li>Is</li>',
-            '<li>A</li>',
-            '<li>List</li>',
-            '</ul>',
-            '<p>A mix of <em>markdown</em> and <em>HTML</em>.</p>',
-            '<hr>',
-            '<p><img src="https://example.com/favicon.ico" alt="an image" title="title"></p>',
-            '<p><svg><rect></rect></svg></p>',
-            '<div id="foo" class="bar baz"><img src="a" alt="bar">alfred</div>',
-            '<p>Hello, world!</p>'
-          ].join('\n'),
-          'should equal the fixture'
-        )
+        }
+      ],
+      data: {quirksMode: false},
+      position: {
+        start: {line: 1, column: 1, offset: 0},
+        end: {line: 21, column: 1, offset: 270}
       }
-    )
+    },
+    'should equal the fixture tree'
+  )
+
+  assert.equal(
+    toHtml(hast2),
+    [
+      '<p><i>Some title</i></p>',
+      '<p>Hello, world!',
+      '</p><ul>',
+      '<li>This</li>',
+      '<li>Is</li>',
+      '<li>A</li>',
+      '<li>List</li>',
+      '</ul>',
+      '<p>A mix of <em>markdown</em> and <em>HTML</em>.</p>',
+      '<hr>',
+      '<p><img src="https://example.com/favicon.ico" alt="an image" title="title"></p>',
+      '<p><svg><rect></rect></svg></p>',
+      '<div id="foo" class="bar baz"><img src="a" alt="bar">alfred</div>',
+      '<p>Hello, world!</p>'
+    ].join('\n'),
+    'should equal the fixture'
+  )
 })
