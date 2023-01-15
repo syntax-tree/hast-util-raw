@@ -3,7 +3,8 @@
  * @typedef {import('./test-types.js')} DoNotTouchAsThisImportIncludesCustomNodesInTree
  */
 
-import test from 'tape'
+import assert from 'node:assert/strict'
+import test from 'node:test'
 import {u} from 'unist-builder'
 import {h, s} from 'hastscript'
 import {unified} from 'unified'
@@ -12,8 +13,8 @@ import remarkRehype from 'remark-rehype'
 import rehypeStringify from 'rehype-stringify'
 import {raw} from './index.js'
 
-test('raw', (t) => {
-  t.throws(
+test('raw', () => {
+  assert.throws(
     () => {
       raw(u('root', [u('customLiteral', '')]))
     },
@@ -21,49 +22,49 @@ test('raw', (t) => {
     'should throw for unknown nodes'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     raw(h('#foo.bar', 'baz')),
     h('#foo.bar', 'baz'),
     'should pass elements through'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     raw(h('img', {alt: 'foo', src: 'bar.jpg'})),
     h('img', {alt: 'foo', src: 'bar.jpg'}),
     'should pass void elements through'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     raw(u('root', [h('#foo.bar', 'baz')])),
     u('root', {data: {quirksMode: false}}, [h('#foo.bar', 'baz')]),
     'should pass roots through'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     raw(u('root', [])),
     u('root', {data: {quirksMode: false}}, []),
     'should pass empty root’s through'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     raw(u('text', 'foo')),
     u('text', 'foo'),
     'should pass texts through'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     raw(u('comment', 'foo')),
     u('comment', 'foo'),
     'should pass comments through'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     raw(h('html', {lang: 'en'})),
     h('html', {lang: 'en'}, [h('head'), h('body')]),
     'should pass documents through (#1)'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     raw(u('root', [u('doctype', {name: 'html'}), h('html', {lang: 'en'}, [])])),
     u('root', {data: {quirksMode: false}}, [
       u('doctype'),
@@ -72,7 +73,7 @@ test('raw', (t) => {
     'should pass documents through (#2)'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     raw(
       u('root', [
         h('img', {alt: 'foo', src: 'bar.jpg'}),
@@ -86,7 +87,7 @@ test('raw', (t) => {
     'should pass raw nodes through (#1)'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     raw(u('root', [u('raw', '<p>Foo, bar!'), h('ol', h('li', 'baz'))])),
     u('root', {data: {quirksMode: false}}, [
       h('p', 'Foo, bar!'),
@@ -95,7 +96,7 @@ test('raw', (t) => {
     'should pass raw nodes through (#2)'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     raw(
       u('root', [
         h('iframe', {height: 500, src: 'https://ddg.gg'}),
@@ -109,7 +110,7 @@ test('raw', (t) => {
     'should pass raw nodes through even after iframe'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     raw(
       u('root', [
         h('textarea', u('text', 'Some text that is <i>not</i> HTML.')),
@@ -123,7 +124,7 @@ test('raw', (t) => {
     'should pass raw nodes through even after textarea (#1)'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     raw(
       u('root', [
         u('raw', '<textarea>Some text that is <i>not</i> HTML.</textarea>'),
@@ -137,7 +138,7 @@ test('raw', (t) => {
     'should pass raw nodes through even after textarea (#2)'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     raw(
       u('root', [
         u('raw', '<textarea>'),
@@ -153,25 +154,25 @@ test('raw', (t) => {
     'should pass raw nodes through even after textarea (#3)'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     raw(u('root', [u('raw', '&#123;and&#125;')])),
     u('root', {data: {quirksMode: false}}, [u('text', '{and}')]),
     'should pass character references through (decimal)'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     raw(u('root', [u('raw', '&lt;and&gt;')])),
     u('root', {data: {quirksMode: false}}, [u('text', '<and>')]),
     'should pass character references through (named)'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     raw(u('root', [u('raw', '&#x7b;and&#x7d;')])),
     u('root', {data: {quirksMode: false}}, [u('text', '{and}')]),
     'should pass character references through (hexadecimal)'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     raw(u('root', [u('raw', '<template>a<b></b>c</template>')])),
     u('root', {data: {quirksMode: false}}, [
       u('element', {
@@ -188,7 +189,7 @@ test('raw', (t) => {
     'should support template nodes'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     raw(u('root', [h('p', [h('svg', [s('foreignObject', [h('div')])])])])),
     u('root', {data: {quirksMode: false}}, [
       h('p', [h('svg', [s('foreignObject', [h('div')])])])
@@ -196,31 +197,31 @@ test('raw', (t) => {
     'should support HTML in SVG in HTML'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     raw(u('root', [u('raw', '<i'), h('b')])),
     u('root', {data: {quirksMode: false}}, [h('b')]),
     'should discard broken HTML when a proper element node is found'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     raw(u('root', [u('raw', '<i'), u('text', 'a')])),
     u('root', {data: {quirksMode: false}}, [u('text', 'a')]),
     'should discard broken HTML when a proper text node is found'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     raw(u('root', [u('raw', '<i'), u('raw', '>'), h('b')])),
     u('root', {data: {quirksMode: false}}, [h('i', [h('b')])]),
     'should not discard HTML broken over several raw nodes'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     raw(u('root', [u('customLiteral', 'x')]), {passThrough: ['customLiteral']}),
     u('root', {data: {quirksMode: false}}, [u('customLiteral', 'x')]),
     'should support passing through nodes w/o children'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     raw(u('root', [u('customParent', [u('raw', '<i>j</i>')])]), {
       passThrough: ['customParent']
     }),
@@ -228,7 +229,7 @@ test('raw', (t) => {
     'should support passing through nodes w/ `raw` children'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     raw(u('root', [u('customParent', [u('comment', 'x')])]), {
       passThrough: ['customParent']
     }),
@@ -238,7 +239,7 @@ test('raw', (t) => {
     'should support passing through nodes w/ `comment` children'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     raw(u('root', [u('customParent', [])]), {
       passThrough: ['customParent']
     }),
@@ -246,7 +247,7 @@ test('raw', (t) => {
     'should support passing through nodes w/ `0` children'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     raw(u('root', [u('customParent', [u('raw', '<x')])]), {
       passThrough: ['customParent']
     }),
@@ -254,7 +255,7 @@ test('raw', (t) => {
     'should support passing through nodes w/ broken raw children (1)'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     raw(u('root', [u('customParent', [u('raw', '<x>')])]), {
       passThrough: ['customParent']
     }),
@@ -262,7 +263,7 @@ test('raw', (t) => {
     'should support passing through nodes w/ broken raw children (2)'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     raw(u('root', [u('customParent', [u('raw', '</x>')])]), {
       passThrough: ['customParent']
     }),
@@ -270,7 +271,7 @@ test('raw', (t) => {
     'should support passing through nodes w/ broken raw children (3)'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     raw(u('root', [u('customParent', [u('raw', '<x>')]), u('raw', '</x>')]), {
       passThrough: ['customParent']
     }),
@@ -278,13 +279,13 @@ test('raw', (t) => {
     'should support passing through nodes w/ broken raw children (4)'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     raw(u('root', [u('raw', 'aaa'), u('raw', '<x>')])),
     u('root', {data: {quirksMode: false}}, [u('text', 'aaa'), h('x')]),
     'should support raw text and then another raw node'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     raw(u('root', [u('raw', '<script>alert(1)</script>')])),
     u('root', {data: {quirksMode: false}}, [
       h('script', u('text', 'alert(1)'))
@@ -292,18 +293,16 @@ test('raw', (t) => {
     'security: raw nodes (unsafe)'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     raw(u('root', [h('script', u('text', 'alert(1)'))])),
     u('root', {data: {quirksMode: false}}, [
       h('script', u('text', 'alert(1)'))
     ]),
     'security: unsafe nodes (unsafe)'
   )
-
-  t.end()
 })
 
-test('integration', (t) => {
+test('integration', () => {
   unified()
     .use(remarkParse)
     .use(remarkRehype, {allowDangerousHtml: true})
@@ -313,7 +312,7 @@ test('integration', (t) => {
       () => (tree, file) => raw(tree, file)
     )
     .use(() => (tree) => {
-      t.deepEqual(
+      assert.deepEqual(
         tree,
         {
           type: 'root',
@@ -690,9 +689,8 @@ test('integration', (t) => {
         ''
       ].join('\n'),
       (error, file) => {
-        t.ifErr(error, 'should not fail')
-
-        t.equal(
+        assert.ifError(error)
+        assert.equal(
           String(file),
           [
             '<p><i>Some title</i></p>',
@@ -714,6 +712,4 @@ test('integration', (t) => {
         )
       }
     )
-
-  t.end()
 })
