@@ -36,6 +36,7 @@
   ],
   "dependencies": {
     "@types/hast": "^2.0.0",
+    "extend": "^3.0.0",
     "hast-util-from-parse5": "^7.0.0",
     "hast-util-to-parse5": "^7.0.0",
     "html-void-elements": "^2.0.0",
