@@ -29,6 +29,14 @@ test('raw', () => {
     'should throw for unknown nodes'
   )
 
+  assert.throws(
+    () => {
+      raw(u('root', [u('mdxjsEsm', '')]))
+    },
+    /^Error: Cannot compile `mdxjsEsm` node. It looks like you are using MDX nodes/,
+    'should throw for unknown nodes'
+  )
+
   assert.deepEqual(
     raw(h('#foo.bar', 'baz')),
     h('#foo.bar', 'baz'),
