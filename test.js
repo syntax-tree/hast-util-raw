@@ -12,8 +12,15 @@ import remarkParse from 'remark-parse'
 import remarkRehype from 'remark-rehype'
 import rehypeStringify from 'rehype-stringify'
 import {raw} from './index.js'
+import * as mod from './index.js'
 
 test('raw', () => {
+  assert.deepEqual(
+    Object.keys(mod).sort(),
+    ['raw'],
+    'should expose the public api'
+  )
+
   assert.throws(
     () => {
       raw(u('root', [u('customLiteral', '')]))
