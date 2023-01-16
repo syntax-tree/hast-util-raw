@@ -1,5 +1,5 @@
 {
-  "include": ["**/**.js", "complex-types.d.ts", "test-types.d.ts"],
+  "include": ["**/**.js", "index.d.ts"],
   "exclude": ["coverage/", "node_modules/"],
   "compilerOptions": {
     "checkJs": true,
