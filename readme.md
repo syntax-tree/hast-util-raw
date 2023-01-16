@@ -18,7 +18,9 @@ HTML) again, keeping positional info okay.
 *   [Install](#install)
 *   [Use](#use)
 *   [API](#api)
-    *   [`raw(tree[, file][, options])`](#rawtree-file-options)
+    *   [`raw(tree[, options])`](#rawtree-options)
+    *   [`Options`](#options)
+    *   [`Raw`](#raw)
 *   [Types](#types)
 *   [Compatibility](#compatibility)
 *   [Security](#security)
@@ -63,7 +65,7 @@ The plugin [`rehype-raw`][rehype-raw] wraps this utility at a higher-level
 ## Install
 
 This package is [ESM only][esm].
-In Node.js (version 12.20+, 14.14+, 16.0+, or 18.0+), install with [npm][]:
+In Node.js (version 14.14+ and 16.0+), install with [npm][]:
 
 ```sh
 npm install hast-util-raw
@@ -116,34 +118,56 @@ Yields:
 
 ## API
 
-This package exports the identifier `raw`.
+This package exports the identifier [`raw`][raw].
 There is no default export.
 
-### `raw(tree[, file][, options])`
+### `raw(tree[, options])`
 
-Parse the tree and raw nodes (strings of HTML) again, keeping positional info
-okay.
+Pass a hast tree through an HTML parser, which will fix nesting, and turn raw
+nodes into actual nodes.
 
-> 👉 **Note**: `tree` should have positional info and `file`, when given, must
-> be a [vfile][] corresponding to `tree`.
+###### Parameters
 
-##### `options`
+*   `tree` ([`Node`][node])
+    — original hast tree to transform
+*   `options` ([`Options`][options], optional)
+    — configuration
 
-Configuration (optional).
+###### Returns
 
-###### `options.passThrough`
+Parsed again tree ([`Node`][node]).
 
-List of custom hast node types to pass through (keep) in hast (`Array<string>`,
-default: `[]`).
-If the passed through nodes have children, those children are expected to be
-hast and will be handled by this utility.
+### `Options`
+
+Configuration (TypeScript type).
+
+###### Fields
+
+*   `passThrough` (`Array<string>`, optional)
+    — list of custom hast node types to pass through (keep).
+    If the passed through nodes have children, those children are expected to be
+    hast and will be handled by this utility
+*   `file` ([`VFile`][vfile], optional)
+    — corresponding virtual file representing the input document
+
+### `Raw`
+
+Interface of semistandard `Raw` nodes (TypeScript type).
+
+###### Type
+
+```ts
+export interface Raw extends Literal {
+  type: 'raw'
+}
+```
 
 ## Types
 
 This package is fully typed with [TypeScript][].
-It exports the additional type `Options`.
+It exports the additional types [`Options`][options] and [`Raw`][raw-node].
 
-It also registers the `Raw` node type with `@types/hast`.
+The types also register the `Raw` node type with `@types/hast`.
 If you’re working with the syntax tree, make sure to import this utility
 somewhere in your types, as that registers the new node types in the tree.
 
@@ -166,7 +190,7 @@ visit(tree, (node) => {
 
 Projects maintained by the unified collective are compatible with all maintained
 versions of Node.js.
-As of now, that is Node.js 12.20+, 14.14+, 16.0+, and 18.0+.
+As of now, that is Node.js 14.14+ and 16.0+.
 Our projects sometimes work with older versions, but this is not guaranteed.
 
 ## Security
@@ -262,6 +286,8 @@ abide by its terms.
 
 [hast]: https://github.com/syntax-tree/hast
 
+[node]: https://github.com/syntax-tree/hast#nodes
+
 [hast-util-sanitize]: https://github.com/syntax-tree/hast-util-sanitize
 
 [vfile]: https://github.com/vfile/vfile
@@ -269,3 +295,9 @@ abide by its terms.
 [rehype-raw]: https://github.com/rehypejs/rehype-raw
 
 [parse5]: https://github.com/inikulin/parse5
+
+[raw]: #rawtree-options
+
+[options]: #options
+
+[raw-node]: #raw
