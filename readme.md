@@ -20,7 +20,6 @@ HTML) again, keeping positional info okay.
 *   [API](#api)
     *   [`raw(tree[, options])`](#rawtree-options)
     *   [`Options`](#options)
-    *   [`Raw`](#raw)
 *   [Types](#types)
 *   [Compatibility](#compatibility)
 *   [Security](#security)
@@ -39,7 +38,7 @@ it, while keeping the original data and positional info intact.
 
 This utility is particularly useful when coming from markdown and wanting to
 support HTML embedded inside that markdown (which requires passing
-`allowDangerousHtml: true` to `mdast-util-to-hast`).
+`allowDangerousHtml: true` to [`mdast-util-to-hast`][mdast-util-to-hast]).
 Markdown dictates how, say, a list item or emphasis can be parsed.
 We can use that to turn the markdown syntax tree into an HTML syntax tree.
 But markdown also dictates that things that look like HTML, are passed through
@@ -150,41 +149,13 @@ Configuration (TypeScript type).
 *   `file` ([`VFile`][vfile], optional)
     — corresponding virtual file representing the input document
 
-### `Raw`
-
-Interface of semistandard `Raw` nodes (TypeScript type).
-
-###### Type
-
-```ts
-export interface Raw extends Literal {
-  type: 'raw'
-}
-```
-
 ## Types
 
 This package is fully typed with [TypeScript][].
-It exports the additional types [`Options`][options] and [`Raw`][raw-node].
+It exports the additional type [`Options`][options].
 
-The types also register the `Raw` node type with `@types/hast`.
-If you’re working with the syntax tree, make sure to import this utility
-somewhere in your types, as that registers the new node types in the tree.
-
-```js
-/**
- * @typedef {import('hast-util-raw')}
- */
-
-import {visit} from 'unist-util-visit'
-
-/** @type {import('hast').Root} */
-const tree = getHastNodeSomeHow()
-
-visit(tree, function (node) {
-  // `node` can now be a `raw` node.
-})
-```
+The `Raw` node type is registered by and exposed from
+[`mdast-util-to-hast`][mdast-util-to-hast].
 
 ## Compatibility
 
@@ -215,7 +186,7 @@ Either do not use this utility in combination with user input, or use
 
 ## Related
 
-*   [`mdast-util-to-hast`](https://github.com/syntax-tree/mdast-util-to-hast)
+*   [`mdast-util-to-hast`][mdast-util-to-hast]
     — transform mdast to hast
 *   [`rehype-raw`](https://github.com/rehypejs/rehype-raw)
     — rehype plugin
@@ -288,6 +259,8 @@ abide by its terms.
 
 [node]: https://github.com/syntax-tree/hast#nodes
 
+[mdast-util-to-hast]: https://github.com/syntax-tree/mdast-util-to-hast
+
 [hast-util-sanitize]: https://github.com/syntax-tree/hast-util-sanitize
 
 [vfile]: https://github.com/vfile/vfile
@@ -299,5 +272,3 @@ abide by its terms.
 [raw]: #rawtree-options
 
 [options]: #options
-
-[raw-node]: #raw

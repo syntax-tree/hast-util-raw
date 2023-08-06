@@ -1,2 +1,5 @@
-// Note: see `index.d.ts` for exposed types.
+/**
+ * @typedef {import('./lib/index.js').Options} Options
+ */
+
 export {raw} from './lib/index.js'
