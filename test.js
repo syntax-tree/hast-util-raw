@@ -1,21 +1,20 @@
 /**
- * @typedef {import('hast').Root} Root
  * @typedef {import('./test-types.js')} DoNotTouchAsThisImportIncludesCustomNodesInTree
  */
 
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import {h, s} from 'hastscript'
+import {raw} from 'hast-util-raw'
 import {toHtml} from 'hast-util-to-html'
 import {fromMarkdown} from 'mdast-util-from-markdown'
 import {toHast} from 'mdast-util-to-hast'
 import {u} from 'unist-builder'
 import {VFile} from 'vfile'
-import {raw} from './index.js'
 
 test('raw', async function (t) {
   await t.test('should expose the public api', async function () {
-    assert.deepEqual(Object.keys(await import('./index.js')).sort(), ['raw'])
+    assert.deepEqual(Object.keys(await import('hast-util-raw')).sort(), ['raw'])
   })
 
   await t.test('should throw for unknown nodes', async function () {
