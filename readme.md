@@ -64,7 +64,7 @@ The plugin [`rehype-raw`][rehype-raw] wraps this utility at a higher-level
 ## Install
 
 This package is [ESM only][esm].
-In Node.js (version 14.14+ and 16.0+), install with [npm][]:
+In Node.js (version 16+), install with [npm][]:
 
 ```sh
 npm install hast-util-raw
@@ -117,7 +117,7 @@ Yields:
 
 ## API
 
-This package exports the identifier [`raw`][raw].
+This package exports the identifier [`raw`][api-raw].
 There is no default export.
 
 ### `raw(tree[, options])`
@@ -129,7 +129,7 @@ nodes into actual nodes.
 
 *   `tree` ([`Node`][node])
     — original hast tree to transform
-*   `options` ([`Options`][options], optional)
+*   `options` ([`Options`][api-options], optional)
     — configuration
 
 ###### Returns
@@ -152,17 +152,20 @@ Configuration (TypeScript type).
 ## Types
 
 This package is fully typed with [TypeScript][].
-It exports the additional type [`Options`][options].
+It exports the additional type [`Options`][api-options].
 
 The `Raw` node type is registered by and exposed from
 [`mdast-util-to-hast`][mdast-util-to-hast].
 
 ## Compatibility
 
-Projects maintained by the unified collective are compatible with all maintained
+Projects maintained by the unified collective are compatible with maintained
 versions of Node.js.
-As of now, that is Node.js 14.14+ and 16.0+.
-Our projects sometimes work with older versions, but this is not guaranteed.
+
+When we cut a new major release, we drop support for unmaintained versions of
+Node.
+This means we try to keep the current release line, `hast-util-raw@^8`,
+compatible with Node.js 12.
 
 ## Security
 
@@ -219,9 +222,9 @@ abide by its terms.
 
 [downloads]: https://www.npmjs.com/package/hast-util-raw
 
-[size-badge]: https://img.shields.io/bundlephobia/minzip/hast-util-raw.svg
+[size-badge]: https://img.shields.io/badge/dynamic/json?label=minzipped%20size&query=$.size.compressedSize&url=https://deno.bundlejs.com/?q=hast-util-raw
 
-[size]: https://bundlephobia.com/result?p=hast-util-raw
+[size]: https://bundlejs.com/?q=hast-util-raw
 
 [sponsors-badge]: https://opencollective.com/unified/sponsors/badge.svg
 
@@ -269,6 +272,6 @@ abide by its terms.
 
 [parse5]: https://github.com/inikulin/parse5
 
-[raw]: #rawtree-options
+[api-raw]: #rawtree-options
 
-[options]: #options
+[api-options]: #options
