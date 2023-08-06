@@ -181,7 +181,7 @@ import {visit} from 'unist-util-visit'
 /** @type {import('hast').Root} */
 const tree = getHastNodeSomeHow()
 
-visit(tree, (node) => {
+visit(tree, function (node) {
   // `node` can now be a `raw` node.
 })
 ```
