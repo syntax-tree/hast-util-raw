@@ -859,6 +859,7 @@ test('integration', () => {
   assert.deepEqual(hast2, expected, 'should equal the fixture tree')
 
   assert.equal(
+    // @ts-expect-error: to do: remove when `to-html` is released.
     toHtml(hast2),
     [
       '<p><i>Some title</i></p>',
