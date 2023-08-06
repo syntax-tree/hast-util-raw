@@ -73,14 +73,14 @@ npm install hast-util-raw
 In Deno with [`esm.sh`][esmsh]:
 
 ```js
-import {raw} from 'https://esm.sh/hast-util-raw@8'
+import {raw} from 'https://esm.sh/hast-util-raw@9'
 ```
 
 In browsers with [`esm.sh`][esmsh]:
 
 ```html
 <script type="module">
-  import {raw} from 'https://esm.sh/hast-util-raw@8?bundle'
+  import {raw} from 'https://esm.sh/hast-util-raw@9?bundle'
 </script>
 ```
 
