@@ -130,12 +130,12 @@ test('raw', async function (t) {
       assert.deepEqual(
         raw(
           u('root', [
-            h('textarea', u('text', 'Some text that is <i>not</i> HTML.')),
+            h('textarea', [u('text', 'Some text that is <i>not</i> HTML.')]),
             u('raw', '<img alt="foo" src="bar.jpg">')
           ])
         ),
         u('root', {data: {quirksMode: false}}, [
-          h('textarea', u('text', 'Some text that is <i>not</i> HTML.')),
+          h('textarea', [u('text', 'Some text that is <i>not</i> HTML.')]),
           h('img', {alt: 'foo', src: 'bar.jpg'})
         ])
       )
@@ -153,7 +153,7 @@ test('raw', async function (t) {
           ])
         ),
         u('root', {data: {quirksMode: false}}, [
-          h('textarea', u('text', 'Some text that is <i>not</i> HTML.')),
+          h('textarea', [u('text', 'Some text that is <i>not</i> HTML.')]),
           h('img', {alt: 'foo', src: 'bar.jpg'})
         ])
       )
@@ -173,8 +173,8 @@ test('raw', async function (t) {
           ])
         ),
         u('root', {data: {quirksMode: false}}, [
-          h('textarea', u('text', 'Some text that is <i>not</i> HTML.')),
-          h('p', u('text', 'but this is'))
+          h('textarea', [u('text', 'Some text that is <i>not</i> HTML.')]),
+          h('p', [u('text', 'but this is')])
         ])
       )
     }
@@ -386,7 +386,7 @@ test('raw', async function (t) {
       assert.deepEqual(
         raw(u('root', [u('raw', '<script>alert(1)</script>')])),
         u('root', {data: {quirksMode: false}}, [
-          h('script', u('text', 'alert(1)'))
+          h('script', [u('text', 'alert(1)')])
         ])
       )
     }
@@ -398,7 +398,7 @@ test('raw', async function (t) {
       assert.deepEqual(
         raw(u('root', [h('script', u('text', 'alert(1)'))])),
         u('root', {data: {quirksMode: false}}, [
-          h('script', u('text', 'alert(1)'))
+          h('script', [u('text', 'alert(1)')])
         ])
       )
     }
