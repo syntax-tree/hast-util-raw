@@ -237,6 +237,35 @@ test('raw', async function (t) {
     )
   })
 
+  await t.test('should support camelcased SVG elements', async function () {
+    assert.deepEqual(
+      raw(
+        s(undefined, [
+          s('svg', [
+            s('circle'),
+            s('rect'),
+            s('linearGradient'),
+            s('path'),
+            s('g')
+          ])
+        ])
+      ),
+      {
+        type: 'root',
+        children: [
+          s('svg', [
+            s('circle'),
+            s('rect'),
+            s('linearGradient'),
+            s('path'),
+            s('g')
+          ])
+        ],
+        data: {quirksMode: false}
+      }
+    )
+  })
+
   await t.test(
     'should discard broken HTML when a proper element node is found',
     async function () {
