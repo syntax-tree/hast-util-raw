@@ -13,19 +13,19 @@ HTML) again, keeping positional info okay.
 
 ## Contents
 
-*   [What is this?](#what-is-this)
-*   [When should I use this?](#when-should-i-use-this)
-*   [Install](#install)
-*   [Use](#use)
-*   [API](#api)
-    *   [`raw(tree[, options])`](#rawtree-options)
-    *   [`Options`](#options)
-*   [Types](#types)
-*   [Compatibility](#compatibility)
-*   [Security](#security)
-*   [Related](#related)
-*   [Contribute](#contribute)
-*   [License](#license)
+* [What is this?](#what-is-this)
+* [When should I use this?](#when-should-i-use-this)
+* [Install](#install)
+* [Use](#use)
+* [API](#api)
+  * [`raw(tree[, options])`](#rawtree-options)
+  * [`Options`](#options)
+* [Types](#types)
+* [Compatibility](#compatibility)
+* [Security](#security)
+* [Related](#related)
+* [Contribute](#contribute)
+* [License](#license)
 
 ## What is this?
 
@@ -53,10 +53,10 @@ If your final result is HTML and you trust content, then “strings” are fine
 HTML through untouched).
 But there are two main cases where a proper syntax tree is preferred:
 
-*   hast utilities need a proper syntax tree as they operate on actual nodes to
-    inspect or transform things, they can’t operate on strings of HTML
-*   other output formats (React, MDX, etc) need actual nodes and can’t handle
-    strings of HTML
+* hast utilities need a proper syntax tree as they operate on actual nodes to
+  inspect or transform things, they can’t operate on strings of HTML
+* other output formats (React, MDX, etc) need actual nodes and can’t handle
+  strings of HTML
 
 The plugin [`rehype-raw`][rehype-raw] wraps this utility at a higher-level
 (easier) abstraction.
@@ -127,10 +127,10 @@ nodes into actual nodes.
 
 ###### Parameters
 
-*   `tree` ([`Node`][node])
-    — original hast tree to transform
-*   `options` ([`Options`][api-options], optional)
-    — configuration
+* `tree` ([`Node`][node])
+  — original hast tree to transform
+* `options` ([`Options`][api-options], optional)
+  — configuration
 
 ###### Returns
 
@@ -142,12 +142,12 @@ Configuration (TypeScript type).
 
 ###### Fields
 
-*   `passThrough` (`Array<string>`, optional)
-    — list of custom hast node types to pass through (keep).
-    If the passed through nodes have children, those children are expected to be
-    hast and will be handled by this utility
-*   `file` ([`VFile`][vfile], optional)
-    — corresponding virtual file representing the input document
+* `passThrough` (`Array<string>`, optional)
+  — list of custom hast node types to pass through (keep).
+  If the passed through nodes have children, those children are expected to be
+  hast and will be handled by this utility
+* `file` ([`VFile`][vfile], optional)
+  — corresponding virtual file representing the input document
 
 ## Types
 
@@ -189,10 +189,10 @@ Either do not use this utility in combination with user input, or use
 
 ## Related
 
-*   [`mdast-util-to-hast`][mdast-util-to-hast]
-    — transform mdast to hast
-*   [`rehype-raw`](https://github.com/rehypejs/rehype-raw)
-    — rehype plugin
+* [`mdast-util-to-hast`][mdast-util-to-hast]
+  — transform mdast to hast
+* [`rehype-raw`](https://github.com/rehypejs/rehype-raw)
+  — rehype plugin
 
 ## Contribute
 

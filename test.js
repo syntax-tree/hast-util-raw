@@ -631,7 +631,7 @@ test('integration', async function (t) {
   await t.test(
     'should work together with the mdast -> hast utilities',
     async function () {
-      const doc = [
+      const document = [
         '<i>Some title</i>',
         '',
         '<p>Hello, world!',
@@ -1002,9 +1002,9 @@ test('integration', async function (t) {
         }
       }
 
-      const mdast = fromMarkdown(doc)
+      const mdast = fromMarkdown(document)
       const hast = toHast(mdast, {allowDangerousHtml: true})
-      const hast2 = raw(hast, {file: new VFile(doc)})
+      const hast2 = raw(hast, {file: new VFile(document)})
 
       assert.deepEqual(hast2, expected)
 
