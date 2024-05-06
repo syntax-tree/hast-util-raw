@@ -1,7 +1,9 @@
 coverage/
 node_modules/
-.DS_Store
-*.log
 *.d.ts
-!/test-types.d.ts
+*.d.ts.map
+*.log
+.DS_Store
 yarn.lock
+
+!/test-types.d.ts
