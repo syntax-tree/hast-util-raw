@@ -409,6 +409,39 @@ test('raw', async function (t) {
     }
   )
 
+  await t.test('should switch to data state at a text node', async function () {
+    assert.deepEqual(
+      raw({
+        type: 'root',
+        children: [
+          {type: 'raw', value: '<details>\n<summary>Complete logs</summary'},
+          {type: 'text', value: '\n'},
+          {type: 'raw', value: '</details>'}
+        ]
+      }),
+      {
+        type: 'root',
+        data: {quirksMode: false},
+        children: [
+          {
+            type: 'element',
+            tagName: 'details',
+            properties: {},
+            children: [
+              {type: 'text', value: '\n'},
+              {
+                type: 'element',
+                tagName: 'summary',
+                properties: {},
+                children: [{type: 'text', value: 'Complete logs\n'}]
+              }
+            ]
+          }
+        ]
+      }
+    )
+  })
+
   await t.test(
     'should support raw nodes (security, unsafe)',
     async function () {
