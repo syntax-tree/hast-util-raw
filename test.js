@@ -1,5 +1,5 @@
 /**
- * @typedef {import('./test-types.js')} DoNotTouchAsThisImportIncludesCustomNodesInTree
+ * @import {} from './test-types.js'
  */
 
 import assert from 'node:assert/strict'
