@@ -1,26 +1,27 @@
-import type {Parent, Literal} from 'hast'
+import type {Literal, Parent} from 'hast'
 
-export interface CustomParent extends Parent {
-  type: 'customParent'
-}
-
-export interface CustomLiteral extends Literal {
+interface CustomLiteral extends Literal {
   type: 'customLiteral'
 }
 
-export interface MdxjsEsm extends Literal {
+interface CustomParent extends Parent {
+  type: 'customParent'
+}
+
+interface MdxjsEsm extends Literal {
   type: 'mdxjsEsm'
 }
 
+// Register nodes.
 declare module 'hast' {
+  interface ElementContentMap {
+    customLiteral: CustomLiteral
+    customParent: CustomParent
+  }
+
   interface RootContentMap {
     customLiteral: CustomLiteral
     customParent: CustomParent
     mdxjsEsm: MdxjsEsm
-  }
-
-  interface ElementContentMap {
-    customLiteral: CustomLiteral
-    customParent: CustomParent
   }
 }

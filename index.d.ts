@@ -1,4 +1,3 @@
-import type {Nodes} from 'hast'
 import type {VFile} from 'vfile'
 
 export {raw} from './lib/index.js'
