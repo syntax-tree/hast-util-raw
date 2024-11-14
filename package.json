@@ -1,37 +1,9 @@
 {
-  "name": "hast-util-raw",
-  "version": "9.0.4",
-  "description": "hast utility to reparse a tree",
-  "license": "MIT",
-  "keywords": [
-    "unist",
-    "hast",
-    "hast-util",
-    "util",
-    "utility",
-    "parse",
-    "raw",
-    "html"
-  ],
-  "repository": "syntax-tree/hast-util-raw",
-  "bugs": "https://github.com/syntax-tree/hast-util-raw/issues",
-  "funding": {
-    "type": "opencollective",
-    "url": "https://opencollective.com/unified"
-  },
   "author": "Titus Wormer <tituswormer@gmail.com> (https://wooorm.com)",
+  "bugs": "https://github.com/syntax-tree/hast-util-raw/issues",
   "contributors": [
-    "Titus Wormer <tituswormer@gmail.com> (https://wooorm.com)",
-    "Christian Murphy <christian.murphy.42@gmail.com>"
-  ],
-  "sideEffects": false,
-  "type": "module",
-  "exports": "./index.js",
-  "files": [
-    "lib/",
-    "index.d.ts.map",
-    "index.d.ts",
-    "index.js"
+    "Christian Murphy <christian.murphy.42@gmail.com>",
+    "Titus Wormer <tituswormer@gmail.com> (https://wooorm.com)"
   ],
   "dependencies": {
     "@types/hast": "^3.0.0",
@@ -48,6 +20,7 @@
     "web-namespaces": "^2.0.0",
     "zwitch": "^2.0.0"
   },
+  "description": "hast utility to reparse a tree",
   "devDependencies": {
     "@types/node": "^22.0.0",
     "@types/ungap__structured-clone": "^1.0.0",
@@ -64,14 +37,29 @@
     "unist-builder": "^4.0.0",
     "xo": "^0.59.0"
   },
-  "scripts": {
-    "prepack": "npm run build && npm run format",
-    "build": "tsc --build --clean && tsc --build && type-coverage",
-    "format": "remark . -qfo && prettier . -w --log-level warn && xo --fix",
-    "test-api": "node --conditions development test.js",
-    "test-coverage": "c8 --100 --reporter lcov npm run test-api",
-    "test": "npm run build && npm run format && npm run test-coverage"
+  "exports": "./index.js",
+  "files": [
+    "index.d.ts.map",
+    "index.d.ts",
+    "index.js",
+    "lib/"
+  ],
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/unified"
   },
+  "keywords": [
+    "hast-util",
+    "hast",
+    "html",
+    "unist",
+    "utility",
+    "util",
+    "parse",
+    "raw"
+  ],
+  "license": "MIT",
+  "name": "hast-util-raw",
   "prettier": {
     "bracketSpacing": false,
     "semi": false,
@@ -86,12 +74,21 @@
       "remark-api"
     ]
   },
+  "repository": "syntax-tree/hast-util-raw",
+  "scripts": {
+    "build": "tsc --build --clean && tsc --build && type-coverage",
+    "format": "remark . -qfo && prettier . -w --log-level warn && xo --fix",
+    "test-api": "node --conditions development test.js",
+    "test-coverage": "c8 --100 --reporter lcov npm run test-api",
+    "test": "npm run build && npm run format && npm run test-coverage"
+  },
+  "sideEffects": false,
   "typeCoverage": {
     "atLeast": 100,
-    "detail": true,
-    "ignoreCatch": true,
     "strict": true
   },
+  "type": "module",
+  "version": "9.0.4",
   "xo": {
     "overrides": [
       {
