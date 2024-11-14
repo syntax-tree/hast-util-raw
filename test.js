@@ -687,6 +687,81 @@ test('raw', async function (t) {
       }
     )
   })
+
+  await t.test('tagfilter', async function (t) {
+    await t.test('should filter tags', async function () {
+      const result = raw(
+        {
+          type: 'root',
+          children: [
+            h('p', [{type: 'raw', value: '<strong> <title> <style> <em>'}]),
+            {type: 'text', value: '\n'},
+            {
+              type: 'raw',
+              value:
+                '<blockquote>\n  <xmp> is disallowed.  <XMP> is also disallowed.\n</blockquote>'
+            }
+          ]
+        },
+        {tagfilter: true}
+      )
+
+      assert.deepEqual(result, {
+        type: 'root',
+        children: [
+          {
+            type: 'element',
+            tagName: 'p',
+            properties: {},
+            children: [
+              {
+                type: 'element',
+                tagName: 'strong',
+                properties: {},
+                children: [
+                  {type: 'text', value: ' <title> <style> '},
+                  {
+                    type: 'element',
+                    tagName: 'em',
+                    properties: {},
+                    children: []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            type: 'element',
+            tagName: 'strong',
+            properties: {},
+            children: [
+              {
+                type: 'element',
+                tagName: 'em',
+                properties: {},
+                children: [
+                  {type: 'text', value: '\n'},
+                  {
+                    type: 'element',
+                    tagName: 'blockquote',
+                    properties: {},
+                    children: [
+                      {
+                        type: 'text',
+                        value:
+                          '\n  <xmp> is disallowed.  <XMP> is also disallowed.\n'
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        data: {quirksMode: false}
+      })
+    })
+  })
 })
 
 test('integration', async function (t) {

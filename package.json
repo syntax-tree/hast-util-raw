@@ -115,6 +115,9 @@
         }
       }
     ],
-    "prettier": true
+    "prettier": true,
+    "rules": {
+      "unicorn/prefer-string-replace-all": "off"
+    }
   }
 }
