@@ -458,7 +458,7 @@ test('raw', async function (t) {
     'should support unsafe nodes (security, unsafe)',
     async function () {
       assert.deepEqual(
-        raw(u('root', [h('script', u('text', 'alert(1)'))])),
+        raw(u('root', [h('script', [u('text', 'alert(1)')])])),
         u('root', {data: {quirksMode: false}}, [
           h('script', [u('text', 'alert(1)')])
         ])

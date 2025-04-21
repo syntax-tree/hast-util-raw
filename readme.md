@@ -1,15 +1,12 @@
 # hast-util-raw
 
-[![Build][build-badge]][build]
-[![Coverage][coverage-badge]][coverage]
-[![Downloads][downloads-badge]][downloads]
-[![Size][size-badge]][size]
-[![Sponsors][sponsors-badge]][collective]
-[![Backers][backers-badge]][collective]
-[![Chat][chat-badge]][chat]
+[![Build][badge-build-image]][badge-build-url]
+[![Coverage][badge-coverage-image]][badge-coverage-url]
+[![Downloads][badge-downloads-image]][badge-downloads-url]
+[![Size][badge-size-image]][badge-size-url]
 
-[hast][] utility to parse the tree and semistandard `raw` nodes (strings of
-HTML) again, keeping positional info okay.
+[hast][github-hast] utility to parse the tree and semistandard `raw` nodes
+(strings of HTML) again, keeping positional info okay.
 
 ## Contents
 
@@ -31,14 +28,15 @@ HTML) again, keeping positional info okay.
 
 This package is a utility to parse a document again.
 It passes each node and embedded raw HTML through an HTML parser
-([`parse5`][parse5]), to recreate a tree exactly as how a browser would parse
-it, while keeping the original data and positional info intact.
+([`parse5`][github-parse5]), to recreate a tree exactly as how a browser would
+parse it, while keeping the original data and positional info intact.
 
 ## When should I use this?
 
 This utility is particularly useful when coming from markdown and wanting to
 support HTML embedded inside that markdown (which requires passing
-`allowDangerousHtml: true` to [`mdast-util-to-hast`][mdast-util-to-hast]).
+`allowDangerousHtml: true` to
+[`mdast-util-to-hast`][github-mdast-util-to-hast]).
 Markdown dictates how, say, a list item or emphasis can be parsed.
 We can use that to turn the markdown syntax tree into an HTML syntax tree.
 But markdown also dictates that things that look like HTML, are passed through
@@ -58,13 +56,13 @@ But there are two main cases where a proper syntax tree is preferred:
 * other output formats (React, MDX, etc) need actual nodes and can’t handle
   strings of HTML
 
-The plugin [`rehype-raw`][rehype-raw] wraps this utility at a higher-level
-(easier) abstraction.
+The plugin [`rehype-raw`][github-rehype-raw] wraps this utility at a
+higher-level (easier) abstraction.
 
 ## Install
 
-This package is [ESM only][esm].
-In Node.js (version 16+), install with [npm][]:
+This package is [ESM only][github-gist-esm].
+In Node.js (version 16+), install with [npm][npmjs-install]:
 
 ```sh
 npm install hast-util-raw
@@ -172,7 +170,7 @@ This package is fully typed with [TypeScript][].
 It exports the additional type [`Options`][api-options].
 
 The `Raw` node type is registered by and exposed from
-[`mdast-util-to-hast`][mdast-util-to-hast].
+[`mdast-util-to-hast`][github-mdast-util-to-hast].
 
 ## Compatibility
 
@@ -186,7 +184,8 @@ compatible with Node.js 16.
 
 ## Security
 
-Use of `hast-util-raw` can open you up to a [cross-site scripting (XSS)][xss]
+Use of `hast-util-raw` can open you up to a
+[cross-site scripting (XSS)][wikipedia-xss]
 attack as `raw` nodes are unsafe.
 The following example shows how a raw node is used to inject a script that runs
 when loaded in a browser.
@@ -202,87 +201,77 @@ Yields:
 ```
 
 Either do not use this utility in combination with user input, or use
-[`hast-util-santize`][hast-util-sanitize].
+[`hast-util-santize`][github-hast-util-sanitize].
 
 ## Related
 
-* [`mdast-util-to-hast`][mdast-util-to-hast]
+* [`mdast-util-to-hast`][github-mdast-util-to-hast]
   — transform mdast to hast
-* [`rehype-raw`](https://github.com/rehypejs/rehype-raw)
+* [`rehype-raw`][github-rehype-raw]
   — rehype plugin
 
 ## Contribute
 
-See [`contributing.md`][contributing] in [`syntax-tree/.github`][health] for
-ways to get started.
-See [`support.md`][support] for ways to get help.
+See [`contributing.md`][health-contributing] in [`syntax-tree/.github`][health]
+for ways to get started.
+See [`support.md`][health-support] for ways to get help.
 
-This project has a [code of conduct][coc].
+This project has a [code of conduct][health-coc].
 By interacting with this repository, organization, or community you agree to
 abide by its terms.
 
 ## License
 
-[MIT][license] © [Titus Wormer][author]
+[MIT][file-license] © [Titus Wormer][wooorm]
 
 <!-- Definitions -->
 
-[build-badge]: https://github.com/syntax-tree/hast-util-raw/workflows/main/badge.svg
+[api-options]: #options
 
-[build]: https://github.com/syntax-tree/hast-util-raw/actions
+[badge-build-image]: https://github.com/syntax-tree/hast-util-raw/workflows/main/badge.svg
 
-[coverage-badge]: https://img.shields.io/codecov/c/github/syntax-tree/hast-util-raw.svg
+[badge-build-url]: https://github.com/syntax-tree/hast-util-raw/actions
 
-[coverage]: https://codecov.io/github/syntax-tree/hast-util-raw
+[badge-coverage-image]: https://img.shields.io/codecov/c/github/syntax-tree/hast-util-raw.svg
 
-[downloads-badge]: https://img.shields.io/npm/dm/hast-util-raw.svg
+[badge-coverage-url]: https://codecov.io/github/syntax-tree/hast-util-raw
 
-[downloads]: https://www.npmjs.com/package/hast-util-raw
+[badge-downloads-image]: https://img.shields.io/npm/dm/hast-util-raw.svg
 
-[size-badge]: https://img.shields.io/badge/dynamic/json?label=minzipped%20size&query=$.size.compressedSize&url=https://deno.bundlejs.com/?q=hast-util-raw
+[badge-downloads-url]: https://www.npmjs.com/package/hast-util-raw
 
-[size]: https://bundlejs.com/?q=hast-util-raw
+[badge-size-image]: https://img.shields.io/bundlejs/size/hast-util-raw
 
-[sponsors-badge]: https://opencollective.com/unified/sponsors/badge.svg
-
-[backers-badge]: https://opencollective.com/unified/backers/badge.svg
-
-[collective]: https://opencollective.com/unified
-
-[chat-badge]: https://img.shields.io/badge/chat-discussions-success.svg
-
-[chat]: https://github.com/syntax-tree/unist/discussions
-
-[npm]: https://docs.npmjs.com/cli/install
-
-[esm]: https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c
+[badge-size-url]: https://bundlejs.com/?q=hast-util-raw
 
 [esmsh]: https://esm.sh
 
-[typescript]: https://www.typescriptlang.org
+[file-license]: license
 
-[license]: license
+[github-gist-esm]: https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c
 
-[author]: https://wooorm.com
+[github-hast]: https://github.com/syntax-tree/hast
+
+[github-hast-util-sanitize]: https://github.com/syntax-tree/hast-util-sanitize
+
+[github-mdast-util-to-hast]: https://github.com/syntax-tree/mdast-util-to-hast
+
+[github-parse5]: https://github.com/inikulin/parse5
+
+[github-rehype-raw]: https://github.com/rehypejs/rehype-raw
 
 [health]: https://github.com/syntax-tree/.github
 
-[contributing]: https://github.com/syntax-tree/.github/blob/main/contributing.md
+[health-coc]: https://github.com/syntax-tree/.github/blob/main/code-of-conduct.md
 
-[support]: https://github.com/syntax-tree/.github/blob/main/support.md
+[health-contributing]: https://github.com/syntax-tree/.github/blob/main/contributing.md
 
-[coc]: https://github.com/syntax-tree/.github/blob/main/code-of-conduct.md
+[health-support]: https://github.com/syntax-tree/.github/blob/main/support.md
 
-[xss]: https://en.wikipedia.org/wiki/Cross-site_scripting
+[npmjs-install]: https://docs.npmjs.com/cli/install
 
-[hast]: https://github.com/syntax-tree/hast
+[typescript]: https://www.typescriptlang.org
 
-[mdast-util-to-hast]: https://github.com/syntax-tree/mdast-util-to-hast
+[wikipedia-xss]: https://en.wikipedia.org/wiki/Cross-site_scripting
 
-[hast-util-sanitize]: https://github.com/syntax-tree/hast-util-sanitize
-
-[rehype-raw]: https://github.com/rehypejs/rehype-raw
-
-[parse5]: https://github.com/inikulin/parse5
-
-[api-options]: #options
+[wooorm]: https://wooorm.com
