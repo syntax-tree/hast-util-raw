@@ -6,7 +6,8 @@
 [![Size][badge-size-image]][badge-size-url]
 
 [hast][github-hast] utility to parse the tree and semistandard `raw` nodes
-(strings of HTML) again, keeping positional info okay.
+(strings of HTML) again,
+keeping positional info okay.
 
 ## Contents
 
@@ -28,33 +29,41 @@
 
 This package is a utility to parse a document again.
 It passes each node and embedded raw HTML through an HTML parser
-([`parse5`][github-parse5]), to recreate a tree exactly as how a browser would
-parse it, while keeping the original data and positional info intact.
+([`parse5`][github-parse5]),
+to recreate a tree exactly as how a browser would parse it,
+while keeping the original data and positional info intact.
 
 ## When should I use this?
 
 This utility is particularly useful when coming from markdown and wanting to
-support HTML embedded inside that markdown (which requires passing
+support HTML embedded inside that markdown
+(which requires passing
 `allowDangerousHtml: true` to
 [`mdast-util-to-hast`][github-mdast-util-to-hast]).
-Markdown dictates how, say, a list item or emphasis can be parsed.
+Markdown dictates how,
+say,
+a list item or emphasis can be parsed.
 We can use that to turn the markdown syntax tree into an HTML syntax tree.
-But markdown also dictates that things that look like HTML, are passed through
-untouched, even when it just looks like XML but doesn’t really make sense, so we
-can’t normally use these strings of “HTML” to create an HTML syntax tree.
+But markdown also dictates that things that look like HTML,
+are passed through untouched,
+even when it just looks like XML but doesn’t really make sense,
+so we can’t normally use these strings of “HTML” to create an HTML syntax tree.
 This utility can.
 It can be used to take those strings of HTML and include them into the syntax
 tree as actual nodes.
 
-If your final result is HTML and you trust content, then “strings” are fine
-(you can pass `allowDangerousHtml: true` to `hast-util-to-html`, which passes
-HTML through untouched).
+If your final result is HTML and you trust content,
+then “strings” are fine
+(you can pass `allowDangerousHtml: true` to `hast-util-to-html`,
+which passes HTML through untouched).
 But there are two main cases where a proper syntax tree is preferred:
 
 * hast utilities need a proper syntax tree as they operate on actual nodes to
-  inspect or transform things, they can’t operate on strings of HTML
-* other output formats (React, MDX, etc) need actual nodes and can’t handle
-  strings of HTML
+  inspect or transform things,
+  they can’t operate on strings of HTML
+* other output formats
+  (React, MDX, etc)
+  need actual nodes and can’t handle strings of HTML
 
 The plugin [`rehype-raw`][github-rehype-raw] wraps this utility at a
 higher-level (easier) abstraction.
@@ -62,7 +71,8 @@ higher-level (easier) abstraction.
 ## Install
 
 This package is [ESM only][github-gist-esm].
-In Node.js (version 16+), install with [npm][npmjs-install]:
+In Node.js (version 16+),
+install with [npm][npmjs-install]:
 
 ```sh
 npm install hast-util-raw
@@ -150,8 +160,9 @@ Configuration.
 
 ### `raw(tree, options)`
 
-Pass a hast tree through an HTML parser, which will fix nesting, and turn
-raw nodes into actual nodes.
+Pass a hast tree through an HTML parser,
+which will fix nesting,
+and turn raw nodes into actual nodes.
 
 ###### Parameters
 
@@ -177,9 +188,10 @@ The `Raw` node type is registered by and exposed from
 Projects maintained by the unified collective are compatible with maintained
 versions of Node.js.
 
-When we cut a new major release, we drop support for unmaintained versions of
-Node.
-This means we try to keep the current release line, `hast-util-raw@^9`,
+When we cut a new major release,
+we drop support for unmaintained versions of Node.
+This means we try to keep the current release line,
+`hast-util-raw@9`,
 compatible with Node.js 16.
 
 ## Security
@@ -191,7 +203,7 @@ The following example shows how a raw node is used to inject a script that runs
 when loaded in a browser.
 
 ```js
-raw(u('root', [u('raw', '<script>alert(1)</script>')]))
+raw({type: 'root', children: [{type: 'raw', value: '<script>alert(1)</script>'}]})
 ```
 
 Yields:
@@ -200,8 +212,8 @@ Yields:
 <script>alert(1)</script>
 ```
 
-Either do not use this utility in combination with user input, or use
-[`hast-util-santize`][github-hast-util-sanitize].
+Either do not use this utility in combination with user input,
+or use [`hast-util-santize`][github-hast-util-sanitize].
 
 ## Related
 
@@ -217,8 +229,9 @@ for ways to get started.
 See [`support.md`][health-support] for ways to get help.
 
 This project has a [code of conduct][health-coc].
-By interacting with this repository, organization, or community you agree to
-abide by its terms.
+By interacting with this repository,
+organization,
+or community you agree to abide by its terms.
 
 ## License
 
