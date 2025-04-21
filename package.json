@@ -77,9 +77,9 @@
   "repository": "syntax-tree/hast-util-raw",
   "scripts": {
     "build": "tsc --build --clean && tsc --build && type-coverage",
-    "format": "remark . -qfo && prettier . -w --log-level warn && xo --fix",
+    "format": "remark --frail --output --quiet -- . && prettier --log-level warn --write -- . && xo --fix",
     "test-api": "node --conditions development test.js",
-    "test-coverage": "c8 --100 --reporter lcov npm run test-api",
+    "test-coverage": "c8 --100 --reporter lcov -- npm run test-api",
     "test": "npm run build && npm run format && npm run test-coverage"
   },
   "sideEffects": false,
