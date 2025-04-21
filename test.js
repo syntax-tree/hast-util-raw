@@ -9,7 +9,6 @@ import {raw} from 'hast-util-raw'
 import {toHtml} from 'hast-util-to-html'
 import {fromMarkdown} from 'mdast-util-from-markdown'
 import {toHast} from 'mdast-util-to-hast'
-import {u} from 'unist-builder'
 import {VFile} from 'vfile'
 
 test('raw', async function (t) {
@@ -19,13 +18,13 @@ test('raw', async function (t) {
 
   await t.test('should throw for unknown nodes', async function () {
     assert.throws(function () {
-      raw(u('root', [u('customLiteral', '')]))
+      raw({type: 'root', children: [{type: 'customLiteral', value: ''}]})
     }, /^Error: Cannot compile `customLiteral` node$/)
   })
 
   await t.test('should throw for unknown nodes', async function () {
     assert.throws(function () {
-      raw(u('root', [u('mdxjsEsm', '')]))
+      raw({type: 'root', children: [{type: 'mdxjsEsm', value: ''}]})
     }, /^Error: Cannot compile `mdxjsEsm` node. It looks like you are using MDX nodes/)
   })
 
@@ -41,25 +40,33 @@ test('raw', async function (t) {
   })
 
   await t.test('should pass roots through', async function () {
-    assert.deepEqual(
-      raw(u('root', [h('#foo.bar', 'baz')])),
-      u('root', {data: {quirksMode: false}}, [h('#foo.bar', 'baz')])
-    )
+    assert.deepEqual(raw({type: 'root', children: [h('#foo.bar', 'baz')]}), {
+      type: 'root',
+      data: {quirksMode: false},
+      children: [h('#foo.bar', 'baz')]
+    })
   })
 
   await t.test('should pass empty root’s through', async function () {
-    assert.deepEqual(
-      raw(u('root', [])),
-      u('root', {data: {quirksMode: false}}, [])
-    )
+    assert.deepEqual(raw({type: 'root', children: []}), {
+      type: 'root',
+      data: {quirksMode: false},
+      children: []
+    })
   })
 
   await t.test('should pass texts through', async function () {
-    assert.deepEqual(raw(u('text', 'foo')), u('text', 'foo'))
+    assert.deepEqual(raw({type: 'text', value: 'foo'}), {
+      type: 'text',
+      value: 'foo'
+    })
   })
 
   await t.test('should pass comments through', async function () {
-    assert.deepEqual(raw(u('comment', 'foo')), u('comment', 'foo'))
+    assert.deepEqual(raw({type: 'comment', value: 'foo'}), {
+      type: 'comment',
+      value: 'foo'
+    })
   })
 
   await t.test('should pass documents through (#1)', async function () {
@@ -71,38 +78,55 @@ test('raw', async function (t) {
 
   await t.test('should pass documents through (#2)', async function () {
     assert.deepEqual(
-      raw(
-        u('root', [u('doctype', {name: 'html'}), h('html', {lang: 'en'}, [])])
-      ),
-      u('root', {data: {quirksMode: false}}, [
-        u('doctype'),
-        h('html', {lang: 'en'}, [h('head'), h('body')])
-      ])
+      raw({
+        type: 'root',
+        children: [{type: 'doctype'}, h('html', {lang: 'en'}, [])]
+      }),
+      {
+        type: 'root',
+        data: {quirksMode: false},
+        children: [
+          {type: 'doctype'},
+          h('html', {lang: 'en'}, [h('head'), h('body')])
+        ]
+      }
     )
   })
 
   await t.test('should pass raw nodes through (#1)', async function () {
     assert.deepEqual(
-      raw(
-        u('root', [
+      raw({
+        type: 'root',
+        children: [
           h('img', {alt: 'foo', src: 'bar.jpg'}),
-          u('raw', '<img alt="foo" src="bar.jpg">')
-        ])
-      ),
-      u('root', {data: {quirksMode: false}}, [
-        h('img', {alt: 'foo', src: 'bar.jpg'}),
-        h('img', {alt: 'foo', src: 'bar.jpg'})
-      ])
+          {type: 'raw', value: '<img alt="foo" src="bar.jpg">'}
+        ]
+      }),
+      {
+        type: 'root',
+        data: {quirksMode: false},
+        children: [
+          h('img', {alt: 'foo', src: 'bar.jpg'}),
+          h('img', {alt: 'foo', src: 'bar.jpg'})
+        ]
+      }
     )
   })
 
   await t.test('should pass raw nodes through (#2)', async function () {
     assert.deepEqual(
-      raw(u('root', [u('raw', '<p>Foo, bar!'), h('ol', h('li', 'baz'))])),
-      u('root', {data: {quirksMode: false}}, [
-        h('p', 'Foo, bar!'),
-        h('ol', h('li', 'baz'))
-      ])
+      raw({
+        type: 'root',
+        children: [
+          {type: 'raw', value: '<p>Foo, bar!'},
+          h('ol', h('li', 'baz'))
+        ]
+      }),
+      {
+        type: 'root',
+        data: {quirksMode: false},
+        children: [h('p', 'Foo, bar!'), h('ol', h('li', 'baz'))]
+      }
     )
   })
 
@@ -110,16 +134,21 @@ test('raw', async function (t) {
     'should pass raw nodes through even after iframe',
     async function () {
       assert.deepEqual(
-        raw(
-          u('root', [
+        raw({
+          type: 'root',
+          children: [
             h('iframe', {height: 500, src: 'https://ddg.gg'}),
-            u('raw', '<img alt="foo" src="bar.jpg">')
-          ])
-        ),
-        u('root', {data: {quirksMode: false}}, [
-          h('iframe', {height: 500, src: 'https://ddg.gg'}),
-          h('img', {alt: 'foo', src: 'bar.jpg'})
-        ])
+            {type: 'raw', value: '<img alt="foo" src="bar.jpg">'}
+          ]
+        }),
+        {
+          type: 'root',
+          data: {quirksMode: false},
+          children: [
+            h('iframe', {height: 500, src: 'https://ddg.gg'}),
+            h('img', {alt: 'foo', src: 'bar.jpg'})
+          ]
+        }
       )
     }
   )
@@ -128,16 +157,25 @@ test('raw', async function (t) {
     'should pass raw nodes through even after textarea (#1)',
     async function () {
       assert.deepEqual(
-        raw(
-          u('root', [
-            h('textarea', [u('text', 'Some text that is <i>not</i> HTML.')]),
-            u('raw', '<img alt="foo" src="bar.jpg">')
-          ])
-        ),
-        u('root', {data: {quirksMode: false}}, [
-          h('textarea', [u('text', 'Some text that is <i>not</i> HTML.')]),
-          h('img', {alt: 'foo', src: 'bar.jpg'})
-        ])
+        raw({
+          type: 'root',
+          children: [
+            h('textarea', [
+              {type: 'text', value: 'Some text that is <i>not</i> HTML.'}
+            ]),
+            {type: 'raw', value: '<img alt="foo" src="bar.jpg">'}
+          ]
+        }),
+        {
+          type: 'root',
+          data: {quirksMode: false},
+          children: [
+            h('textarea', [
+              {type: 'text', value: 'Some text that is <i>not</i> HTML.'}
+            ]),
+            h('img', {alt: 'foo', src: 'bar.jpg'})
+          ]
+        }
       )
     }
   )
@@ -146,16 +184,26 @@ test('raw', async function (t) {
     'should pass raw nodes through even after textarea (#2)',
     async function () {
       assert.deepEqual(
-        raw(
-          u('root', [
-            u('raw', '<textarea>Some text that is <i>not</i> HTML.</textarea>'),
-            u('raw', '<img alt="foo" src="bar.jpg">')
-          ])
-        ),
-        u('root', {data: {quirksMode: false}}, [
-          h('textarea', [u('text', 'Some text that is <i>not</i> HTML.')]),
-          h('img', {alt: 'foo', src: 'bar.jpg'})
-        ])
+        raw({
+          type: 'root',
+          children: [
+            {
+              type: 'raw',
+              value: '<textarea>Some text that is <i>not</i> HTML.</textarea>'
+            },
+            {type: 'raw', value: '<img alt="foo" src="bar.jpg">'}
+          ]
+        }),
+        {
+          type: 'root',
+          data: {quirksMode: false},
+          children: [
+            h('textarea', [
+              {type: 'text', value: 'Some text that is <i>not</i> HTML.'}
+            ]),
+            h('img', {alt: 'foo', src: 'bar.jpg'})
+          ]
+        }
       )
     }
   )
@@ -164,18 +212,25 @@ test('raw', async function (t) {
     'should pass raw nodes through even after textarea (#3)',
     async function () {
       assert.deepEqual(
-        raw(
-          u('root', [
-            u('raw', '<textarea>'),
-            u('text', 'Some text that is <i>not</i> HTML.'),
-            u('raw', '</textarea>'),
-            u('raw', '<p>but this is</p>')
-          ])
-        ),
-        u('root', {data: {quirksMode: false}}, [
-          h('textarea', [u('text', 'Some text that is <i>not</i> HTML.')]),
-          h('p', [u('text', 'but this is')])
-        ])
+        raw({
+          type: 'root',
+          children: [
+            {type: 'raw', value: '<textarea>'},
+            {type: 'text', value: 'Some text that is <i>not</i> HTML.'},
+            {type: 'raw', value: '</textarea>'},
+            {type: 'raw', value: '<p>but this is</p>'}
+          ]
+        }),
+        {
+          type: 'root',
+          data: {quirksMode: false},
+          children: [
+            h('textarea', [
+              {type: 'text', value: 'Some text that is <i>not</i> HTML.'}
+            ]),
+            h('p', [{type: 'text', value: 'but this is'}])
+          ]
+        }
       )
     }
   )
@@ -184,8 +239,15 @@ test('raw', async function (t) {
     'should pass character references through (decimal)',
     async function () {
       assert.deepEqual(
-        raw(u('root', [u('raw', '&#123;and&#125;')])),
-        u('root', {data: {quirksMode: false}}, [u('text', '{and}')])
+        raw({
+          type: 'root',
+          children: [{type: 'raw', value: '&#123;and&#125;'}]
+        }),
+        {
+          type: 'root',
+          data: {quirksMode: false},
+          children: [{type: 'text', value: '{and}'}]
+        }
       )
     }
   )
@@ -194,8 +256,12 @@ test('raw', async function (t) {
     'should pass character references through (named)',
     async function () {
       assert.deepEqual(
-        raw(u('root', [u('raw', '&lt;and&gt;')])),
-        u('root', {data: {quirksMode: false}}, [u('text', '<and>')])
+        raw({type: 'root', children: [{type: 'raw', value: '&lt;and&gt;'}]}),
+        {
+          type: 'root',
+          data: {quirksMode: false},
+          children: [{type: 'text', value: '<and>'}]
+        }
       )
     }
   )
@@ -204,36 +270,60 @@ test('raw', async function (t) {
     'should pass character references through (hexadecimal)',
     async function () {
       assert.deepEqual(
-        raw(u('root', [u('raw', '&#x7b;and&#x7d;')])),
-        u('root', {data: {quirksMode: false}}, [u('text', '{and}')])
+        raw({
+          type: 'root',
+          children: [{type: 'raw', value: '&#x7b;and&#x7d;'}]
+        }),
+        {
+          type: 'root',
+          data: {quirksMode: false},
+          children: [{type: 'text', value: '{and}'}]
+        }
       )
     }
   )
 
   await t.test('should support template nodes', async function () {
     assert.deepEqual(
-      raw(u('root', [u('raw', '<template>a<b></b>c</template>')])),
-      u('root', {data: {quirksMode: false}}, [
-        u('element', {
-          tagName: 'template',
-          properties: {},
-          children: [],
-          content: u('root', {data: {quirksMode: false}}, [
-            u('text', 'a'),
-            h('b'),
-            u('text', 'c')
-          ])
-        })
-      ])
+      raw({
+        type: 'root',
+        children: [{type: 'raw', value: '<template>a<b></b>c</template>'}]
+      }),
+      {
+        type: 'root',
+        data: {quirksMode: false},
+        children: [
+          {
+            type: 'element',
+            tagName: 'template',
+            properties: {},
+            children: [],
+            content: {
+              type: 'root',
+              data: {quirksMode: false},
+              children: [
+                {type: 'text', value: 'a'},
+                h('b'),
+                {type: 'text', value: 'c'}
+              ]
+            }
+          }
+        ]
+      }
     )
   })
 
   await t.test('should support HTML in SVG in HTML', async function () {
     assert.deepEqual(
-      raw(u('root', [h('p', [h('svg', [s('foreignObject', [h('div')])])])])),
-      u('root', {data: {quirksMode: false}}, [
-        h('p', [h('svg', [s('foreignObject', [h('div')])])])
-      ])
+      raw({
+        type: 'root',
+        children: [h('p', [h('svg', [s('foreignObject', [h('div')])])])]
+      }),
+      {
+        type: 'root',
+        data: {quirksMode: false},
+        children: [h('p', [h('svg', [s('foreignObject', [h('div')])])])]
+      }
     )
   })
 
@@ -270,8 +360,8 @@ test('raw', async function (t) {
     'should discard broken HTML when a proper element node is found',
     async function () {
       assert.deepEqual(
-        raw(u('root', [u('raw', '<i'), h('b')])),
-        u('root', {data: {quirksMode: false}}, [h('b')])
+        raw({type: 'root', children: [{type: 'raw', value: '<i'}, h('b')]}),
+        {type: 'root', data: {quirksMode: false}, children: [h('b')]}
       )
     }
   )
@@ -280,8 +370,18 @@ test('raw', async function (t) {
     'should discard broken HTML when a proper text node is found',
     async function () {
       assert.deepEqual(
-        raw(u('root', [u('raw', '<i'), u('text', 'a')])),
-        u('root', {data: {quirksMode: false}}, [u('text', 'a')])
+        raw({
+          type: 'root',
+          children: [
+            {type: 'raw', value: '<i'},
+            {type: 'text', value: 'a'}
+          ]
+        }),
+        {
+          type: 'root',
+          data: {quirksMode: false},
+          children: [{type: 'text', value: 'a'}]
+        }
       )
     }
   )
@@ -290,8 +390,15 @@ test('raw', async function (t) {
     'should not discard HTML broken over several raw nodes',
     async function () {
       assert.deepEqual(
-        raw(u('root', [u('raw', '<i'), u('raw', '>'), h('b')])),
-        u('root', {data: {quirksMode: false}}, [h('i', [h('b')])])
+        raw({
+          type: 'root',
+          children: [
+            {type: 'raw', value: '<i'},
+            {type: 'raw', value: '>'},
+            h('b')
+          ]
+        }),
+        {type: 'root', data: {quirksMode: false}, children: [h('i', [h('b')])]}
       )
     }
   )
@@ -300,10 +407,17 @@ test('raw', async function (t) {
     'should support passing through nodes w/o children',
     async function () {
       assert.deepEqual(
-        raw(u('root', [u('customLiteral', 'x')]), {
-          passThrough: ['customLiteral']
-        }),
-        u('root', {data: {quirksMode: false}}, [u('customLiteral', 'x')])
+        raw(
+          {type: 'root', children: [{type: 'customLiteral', value: 'x'}]},
+          {
+            passThrough: ['customLiteral']
+          }
+        ),
+        {
+          type: 'root',
+          data: {quirksMode: false},
+          children: [{type: 'customLiteral', value: 'x'}]
+        }
       )
     }
   )
@@ -312,12 +426,25 @@ test('raw', async function (t) {
     'should support passing through nodes w/ `raw` children',
     async function () {
       assert.deepEqual(
-        raw(u('root', [u('customParent', [u('raw', '<i>j</i>')])]), {
-          passThrough: ['customParent']
-        }),
-        u('root', {data: {quirksMode: false}}, [
-          u('customParent', [h('i', 'j')])
-        ])
+        raw(
+          {
+            type: 'root',
+            children: [
+              {
+                type: 'customParent',
+                children: [{type: 'raw', value: '<i>j</i>'}]
+              }
+            ]
+          },
+          {
+            passThrough: ['customParent']
+          }
+        ),
+        {
+          type: 'root',
+          data: {quirksMode: false},
+          children: [{type: 'customParent', children: [h('i', 'j')]}]
+        }
       )
     }
   )
@@ -326,12 +453,24 @@ test('raw', async function (t) {
     'should support passing through nodes w/ `comment` children',
     async function () {
       assert.deepEqual(
-        raw(u('root', [u('customParent', [u('comment', 'x')])]), {
-          passThrough: ['customParent']
-        }),
-        u('root', {data: {quirksMode: false}}, [
-          u('customParent', [u('comment', 'x')])
-        ])
+        raw(
+          {
+            type: 'root',
+            children: [
+              {type: 'customParent', children: [{type: 'comment', value: 'x'}]}
+            ]
+          },
+          {
+            passThrough: ['customParent']
+          }
+        ),
+        {
+          type: 'root',
+          data: {quirksMode: false},
+          children: [
+            {type: 'customParent', children: [{type: 'comment', value: 'x'}]}
+          ]
+        }
       )
     }
   )
@@ -340,10 +479,17 @@ test('raw', async function (t) {
     'should support passing through nodes w/ `0` children',
     async function () {
       assert.deepEqual(
-        raw(u('root', [u('customParent', [])]), {
-          passThrough: ['customParent']
-        }),
-        u('root', {data: {quirksMode: false}}, [u('customParent', [])])
+        raw(
+          {type: 'root', children: [{type: 'customParent', children: []}]},
+          {
+            passThrough: ['customParent']
+          }
+        ),
+        {
+          type: 'root',
+          data: {quirksMode: false},
+          children: [{type: 'customParent', children: []}]
+        }
       )
     }
   )
@@ -352,10 +498,22 @@ test('raw', async function (t) {
     'should support passing through nodes w/ broken raw children (1)',
     async function () {
       assert.deepEqual(
-        raw(u('root', [u('customParent', [u('raw', '<x')])]), {
-          passThrough: ['customParent']
-        }),
-        u('root', {data: {quirksMode: false}}, [u('customParent', [])])
+        raw(
+          {
+            type: 'root',
+            children: [
+              {type: 'customParent', children: [{type: 'raw', value: '<x'}]}
+            ]
+          },
+          {
+            passThrough: ['customParent']
+          }
+        ),
+        {
+          type: 'root',
+          data: {quirksMode: false},
+          children: [{type: 'customParent', children: []}]
+        }
       )
     }
   )
@@ -364,10 +522,22 @@ test('raw', async function (t) {
     'should support passing through nodes w/ broken raw children (2)',
     async function () {
       assert.deepEqual(
-        raw(u('root', [u('customParent', [u('raw', '<x>')])]), {
-          passThrough: ['customParent']
-        }),
-        u('root', {data: {quirksMode: false}}, [u('customParent', [h('x')])])
+        raw(
+          {
+            type: 'root',
+            children: [
+              {type: 'customParent', children: [{type: 'raw', value: '<x>'}]}
+            ]
+          },
+          {
+            passThrough: ['customParent']
+          }
+        ),
+        {
+          type: 'root',
+          data: {quirksMode: false},
+          children: [{type: 'customParent', children: [h('x')]}]
+        }
       )
     }
   )
@@ -376,10 +546,22 @@ test('raw', async function (t) {
     'should support passing through nodes w/ broken raw children (3)',
     async function () {
       assert.deepEqual(
-        raw(u('root', [u('customParent', [u('raw', '</x>')])]), {
-          passThrough: ['customParent']
-        }),
-        u('root', {data: {quirksMode: false}}, [u('customParent', [])])
+        raw(
+          {
+            type: 'root',
+            children: [
+              {type: 'customParent', children: [{type: 'raw', value: '</x>'}]}
+            ]
+          },
+          {
+            passThrough: ['customParent']
+          }
+        ),
+        {
+          type: 'root',
+          data: {quirksMode: false},
+          children: [{type: 'customParent', children: []}]
+        }
       )
     }
   )
@@ -389,12 +571,22 @@ test('raw', async function (t) {
     async function () {
       assert.deepEqual(
         raw(
-          u('root', [u('customParent', [u('raw', '<x>')]), u('raw', '</x>')]),
+          {
+            type: 'root',
+            children: [
+              {type: 'customParent', children: [{type: 'raw', value: '<x>'}]},
+              {type: 'raw', value: '</x>'}
+            ]
+          },
           {
             passThrough: ['customParent']
           }
         ),
-        u('root', {data: {quirksMode: false}}, [u('customParent', [h('x')])])
+        {
+          type: 'root',
+          data: {quirksMode: false},
+          children: [{type: 'customParent', children: [h('x')]}]
+        }
       )
     }
   )
@@ -403,8 +595,18 @@ test('raw', async function (t) {
     'should support raw text and then another raw node',
     async function () {
       assert.deepEqual(
-        raw(u('root', [u('raw', 'aaa'), u('raw', '<x>')])),
-        u('root', {data: {quirksMode: false}}, [u('text', 'aaa'), h('x')])
+        raw({
+          type: 'root',
+          children: [
+            {type: 'raw', value: 'aaa'},
+            {type: 'raw', value: '<x>'}
+          ]
+        }),
+        {
+          type: 'root',
+          data: {quirksMode: false},
+          children: [{type: 'text', value: 'aaa'}, h('x')]
+        }
       )
     }
   )
@@ -446,10 +648,15 @@ test('raw', async function (t) {
     'should support raw nodes (security, unsafe)',
     async function () {
       assert.deepEqual(
-        raw(u('root', [u('raw', '<script>alert(1)</script>')])),
-        u('root', {data: {quirksMode: false}}, [
-          h('script', [u('text', 'alert(1)')])
-        ])
+        raw({
+          type: 'root',
+          children: [{type: 'raw', value: '<script>alert(1)</script>'}]
+        }),
+        {
+          type: 'root',
+          data: {quirksMode: false},
+          children: [h('script', [{type: 'text', value: 'alert(1)'}])]
+        }
       )
     }
   )
@@ -458,10 +665,15 @@ test('raw', async function (t) {
     'should support unsafe nodes (security, unsafe)',
     async function () {
       assert.deepEqual(
-        raw(u('root', [h('script', [u('text', 'alert(1)')])])),
-        u('root', {data: {quirksMode: false}}, [
-          h('script', [u('text', 'alert(1)')])
-        ])
+        raw({
+          type: 'root',
+          children: [h('script', [{type: 'text', value: 'alert(1)'}])]
+        }),
+        {
+          type: 'root',
+          data: {quirksMode: false},
+          children: [h('script', [{type: 'text', value: 'alert(1)'}])]
+        }
       )
     }
   )
@@ -470,22 +682,28 @@ test('raw', async function (t) {
     await t.test(
       'should support text after a raw rcdata opening tag',
       async function () {
-        assert.deepEqual(raw(h(null, ['a ', u('raw', '<title>'), ' b.'])), {
-          type: 'root',
-          children: [u('text', 'a '), h('title', ' b.')],
-          data: {quirksMode: false}
-        })
+        assert.deepEqual(
+          raw(h(null, ['a ', {type: 'raw', value: '<title>'}, ' b.'])),
+          {
+            type: 'root',
+            children: [{type: 'text', value: 'a '}, h('title', ' b.')],
+            data: {quirksMode: false}
+          }
+        )
       }
     )
 
     await t.test(
       'should ignore an element after a raw rcdata opening tag',
       async function () {
-        assert.deepEqual(raw(h(null, ['a ', u('raw', '<title>'), h('b')])), {
-          type: 'root',
-          children: [u('text', 'a '), h('title')],
-          data: {quirksMode: false}
-        })
+        assert.deepEqual(
+          raw(h(null, ['a ', {type: 'raw', value: '<title>'}, h('b')])),
+          {
+            type: 'root',
+            children: [{type: 'text', value: 'a '}, h('title')],
+            data: {quirksMode: false}
+          }
+        )
       }
     )
 
@@ -494,11 +712,16 @@ test('raw', async function (t) {
       async function () {
         assert.deepEqual(
           raw(
-            h(null, ['a ', u('raw', '<title>'), ' b ', u('raw', '</textarea>')])
+            h(null, [
+              'a ',
+              {type: 'raw', value: '<title>'},
+              ' b ',
+              {type: 'raw', value: '</textarea>'}
+            ])
           ),
           {
             type: 'root',
-            children: [u('text', 'a '), h('title', ' b ')],
+            children: [{type: 'text', value: 'a '}, h('title', ' b ')],
             data: {quirksMode: false}
           }
         )
@@ -512,15 +735,19 @@ test('raw', async function (t) {
           raw(
             h(null, [
               'a ',
-              u('raw', '<title>'),
+              {type: 'raw', value: '<title>'},
               ' b ',
-              u('raw', '</title>'),
+              {type: 'raw', value: '</title>'},
               ' c.'
             ])
           ),
           {
             type: 'root',
-            children: [u('text', 'a '), h('title', ' b '), u('text', ' c.')],
+            children: [
+              {type: 'text', value: 'a '},
+              h('title', ' b '),
+              {type: 'text', value: ' c.'}
+            ],
             data: {quirksMode: false}
           }
         )
@@ -534,22 +761,28 @@ test('raw', async function (t) {
       await t.test(
         'should support text after a raw rawtext opening tag',
         async function () {
-          assert.deepEqual(raw(h(null, ['a ', u('raw', '<iframe>'), ' b.'])), {
-            type: 'root',
-            children: [u('text', 'a '), h('iframe', ' b.')],
-            data: {quirksMode: false}
-          })
+          assert.deepEqual(
+            raw(h(null, ['a ', {type: 'raw', value: '<iframe>'}, ' b.'])),
+            {
+              type: 'root',
+              children: [{type: 'text', value: 'a '}, h('iframe', ' b.')],
+              data: {quirksMode: false}
+            }
+          )
         }
       )
 
       await t.test(
         'should ignore an element after a raw rawtext opening tag',
         async function () {
-          assert.deepEqual(raw(h(null, ['a ', u('raw', '<iframe>'), h('b')])), {
-            type: 'root',
-            children: [u('text', 'a '), h('iframe')],
-            data: {quirksMode: false}
-          })
+          assert.deepEqual(
+            raw(h(null, ['a ', {type: 'raw', value: '<iframe>'}, h('b')])),
+            {
+              type: 'root',
+              children: [{type: 'text', value: 'a '}, h('iframe')],
+              data: {quirksMode: false}
+            }
+          )
         }
       )
 
@@ -558,11 +791,16 @@ test('raw', async function (t) {
         async function () {
           assert.deepEqual(
             raw(
-              h(null, ['a ', u('raw', '<iframe>'), ' b ', u('raw', '</style>')])
+              h(null, [
+                'a ',
+                {type: 'raw', value: '<iframe>'},
+                ' b ',
+                {type: 'raw', value: '</style>'}
+              ])
             ),
             {
               type: 'root',
-              children: [u('text', 'a '), h('iframe', ' b ')],
+              children: [{type: 'text', value: 'a '}, h('iframe', ' b ')],
               data: {quirksMode: false}
             }
           )
@@ -576,15 +814,19 @@ test('raw', async function (t) {
             raw(
               h(null, [
                 'a ',
-                u('raw', '<iframe>'),
+                {type: 'raw', value: '<iframe>'},
                 ' b ',
-                u('raw', '</iframe>'),
+                {type: 'raw', value: '</iframe>'},
                 ' c.'
               ])
             ),
             {
               type: 'root',
-              children: [u('text', 'a '), h('iframe', ' b '), u('text', ' c.')],
+              children: [
+                {type: 'text', value: 'a '},
+                h('iframe', ' b '),
+                {type: 'text', value: ' c.'}
+              ],
               data: {quirksMode: false}
             }
           )
@@ -597,22 +839,28 @@ test('raw', async function (t) {
     await t.test(
       'should support text after a raw script data opening tag',
       async function () {
-        assert.deepEqual(raw(h(null, ['a ', u('raw', '<script>'), ' b.'])), {
-          type: 'root',
-          children: [u('text', 'a '), h('script', ' b.')],
-          data: {quirksMode: false}
-        })
+        assert.deepEqual(
+          raw(h(null, ['a ', {type: 'raw', value: '<script>'}, ' b.'])),
+          {
+            type: 'root',
+            children: [{type: 'text', value: 'a '}, h('script', ' b.')],
+            data: {quirksMode: false}
+          }
+        )
       }
     )
 
     await t.test(
       'should ignore an element after a raw script data opening tag',
       async function () {
-        assert.deepEqual(raw(h(null, ['a ', u('raw', '<script>'), h('b')])), {
-          type: 'root',
-          children: [u('text', 'a '), h('script')],
-          data: {quirksMode: false}
-        })
+        assert.deepEqual(
+          raw(h(null, ['a ', {type: 'raw', value: '<script>'}, h('b')])),
+          {
+            type: 'root',
+            children: [{type: 'text', value: 'a '}, h('script')],
+            data: {quirksMode: false}
+          }
+        )
       }
     )
 
@@ -623,15 +871,19 @@ test('raw', async function (t) {
           raw(
             h(null, [
               'a ',
-              u('raw', '<script>'),
+              {type: 'raw', value: '<script>'},
               ' b ',
-              u('raw', '</script>'),
+              {type: 'raw', value: '</script>'},
               ' c.'
             ])
           ),
           {
             type: 'root',
-            children: [u('text', 'a '), h('script', ' b '), u('text', ' c.')],
+            children: [
+              {type: 'text', value: 'a '},
+              h('script', ' b '),
+              {type: 'text', value: ' c.'}
+            ],
             data: {quirksMode: false}
           }
         )
@@ -643,11 +895,14 @@ test('raw', async function (t) {
     await t.test(
       'should support text after a raw plaintext opening tag',
       async function () {
-        assert.deepEqual(raw(h(null, ['a ', u('raw', '<plaintext>'), ' b.'])), {
-          type: 'root',
-          children: [u('text', 'a '), h('plaintext', ' b.')],
-          data: {quirksMode: false}
-        })
+        assert.deepEqual(
+          raw(h(null, ['a ', {type: 'raw', value: '<plaintext>'}, ' b.'])),
+          {
+            type: 'root',
+            children: [{type: 'text', value: 'a '}, h('plaintext', ' b.')],
+            data: {quirksMode: false}
+          }
+        )
       }
     )
 
@@ -655,10 +910,10 @@ test('raw', async function (t) {
       'should ignore an element after a raw plaintext opening tag',
       async function () {
         assert.deepEqual(
-          raw(h(null, ['a ', u('raw', '<plaintext>'), h('b')])),
+          raw(h(null, ['a ', {type: 'raw', value: '<plaintext>'}, h('b')])),
           {
             type: 'root',
-            children: [u('text', 'a '), h('plaintext')],
+            children: [{type: 'text', value: 'a '}, h('plaintext')],
             data: {quirksMode: false}
           }
         )
@@ -672,15 +927,15 @@ test('raw', async function (t) {
           raw(
             h(null, [
               'a ',
-              u('raw', '<plaintext>'),
+              {type: 'raw', value: '<plaintext>'},
               ' b ',
-              u('raw', '</plaintext>'),
+              {type: 'raw', value: '</plaintext>'},
               ' c.'
             ])
           ),
           {
             type: 'root',
-            children: [u('text', 'a '), h('plaintext', ' b  c.')],
+            children: [{type: 'text', value: 'a '}, h('plaintext', ' b  c.')],
             data: {quirksMode: false}
           }
         )
