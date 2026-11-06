@@ -678,6 +678,72 @@ test('raw', async function (t) {
     }
   )
 
+  await t.test('whitespace', async function (t) {
+    await t.test('should keep whitespace in `table`', async function () {
+      assert.deepEqual(
+        raw(h('table', ['\n', h('tbody')])),
+        h('table', ['\n', h('tbody')])
+      )
+    })
+
+    await t.test('should keep whitespace in `colgroup`', async function () {
+      assert.deepEqual(
+        raw(h('table', [h('colgroup', ['\n', h('col')])])),
+        h('table', [h('colgroup', ['\n', h('col')])])
+      )
+    })
+
+    await t.test('should keep whitespace in `head`', async function () {
+      assert.deepEqual(
+        raw(h('html', [h('head', ['\n', h('title')])])),
+        h('html', [h('head', ['\n', h('title')]), h('body')])
+      )
+    })
+
+    await t.test(
+      'should split whitespace from other text in `head`',
+      async function () {
+        assert.deepEqual(
+          raw(h('html', [h('head', '\na')])),
+          h('html', [h('head', '\n'), h('body', 'a')])
+        )
+      }
+    )
+
+    await t.test(
+      'should foster parent whitespace with other text in `table`',
+      async function () {
+        assert.deepEqual(
+          raw({type: 'root', children: [h('table', ['\na', h('tbody')])]}),
+          {
+            type: 'root',
+            data: {quirksMode: false},
+            children: [{type: 'text', value: '\na'}, h('table', [h('tbody')])]
+          }
+        )
+      }
+    )
+
+    await t.test(
+      'should keep the position of text with whitespace',
+      async function () {
+        const position = {
+          start: {line: 1, column: 1, offset: 0},
+          end: {line: 1, column: 4, offset: 3}
+        }
+
+        assert.deepEqual(
+          raw({type: 'text', value: 'a b', position}, {file: new VFile()}),
+          {type: 'text', value: 'a b', position}
+        )
+      }
+    )
+
+    await t.test('should drop empty texts', async function () {
+      assert.deepEqual(raw(h('p', [''])), h('p'))
+    })
+  })
+
   await t.test('rcdata (`<textarea>`, `<title>`)', async function (t) {
     await t.test(
       'should support text after a raw rcdata opening tag',

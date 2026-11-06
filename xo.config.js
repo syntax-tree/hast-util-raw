@@ -21,6 +21,7 @@ const xoConfig = [
       'unicorn/better-dom-traversing': 'off',
       'unicorn/max-nested-calls': 'off',
       'unicorn/no-array-sort': 'off',
+      'unicorn/prefer-code-point': 'off',
       // Separate guards, each with their own comment, are clearer.
       'unicorn/prefer-combined-guards': 'off',
       'unicorn/prefer-early-return': 'off',
