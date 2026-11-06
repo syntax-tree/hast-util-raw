@@ -17,7 +17,7 @@ keeping positional info okay.
 * [Use](#use)
 * [API](#api)
   * [`Options`](#options)
-  * [`raw(tree, options)`](#rawtree-options)
+  * [`raw(tree[, options])`](#rawtree-options)
 * [Types](#types)
 * [Compatibility](#compatibility)
 * [Security](#security)
