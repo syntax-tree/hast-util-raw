@@ -18,7 +18,6 @@ keeping positional info okay.
 * [API](#api)
   * [`Options`](#options)
   * [`raw(tree[, options])`](#rawtree-options)
-* [Types](#types)
 * [Compatibility](#compatibility)
 * [Security](#security)
 * [Related](#related)
@@ -126,6 +125,14 @@ Yields:
 
 ## API
 
+This package exports the identifier [`raw`][api-raw].
+There is no default export.
+It exports the additional [TypeScript][] type
+[`Options`][api-options].
+
+The `Raw` node type is registered by and exposed from
+[`mdast-util-to-hast`][github-mdast-util-to-hast].
+
 ### `Options`
 
 Configuration.
@@ -176,14 +183,6 @@ and turn raw nodes into actual nodes.
 ###### Returns
 
 Parsed again tree (`Root | RootContent`).
-
-## Types
-
-This package is fully typed with [TypeScript][].
-It exports the additional type [`Options`][api-options].
-
-The `Raw` node type is registered by and exposed from
-[`mdast-util-to-hast`][github-mdast-util-to-hast].
 
 ## Compatibility
 
@@ -242,6 +241,8 @@ or community you agree to abide by its terms.
 <!-- Definitions -->
 
 [api-options]: #options
+
+[api-raw]: #rawtree-options
 
 [badge-build-image]: https://github.com/syntax-tree/hast-util-raw/workflows/main/badge.svg
 
