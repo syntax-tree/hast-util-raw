@@ -208,7 +208,7 @@ Yields:
 ```
 
 Either do not use this utility in combination with user input,
-or use [`hast-util-santize`][github-hast-util-sanitize].
+or use [`hast-util-sanitize`][github-hast-util-sanitize].
 
 ## Related
 
