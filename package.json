@@ -13,7 +13,7 @@
     "hast-util-to-parse5": "^8.0.0",
     "html-void-elements": "^3.0.0",
     "mdast-util-to-hast": "^13.0.0",
-    "parse5": "^7.0.0",
+    "parse5": "^8.0.0",
     "unist-util-position": "^5.0.0",
     "unist-util-visit": "^5.0.0",
     "vfile": "^6.0.0",

@@ -14,6 +14,7 @@ const xoConfig = [
       'jsdoc/check-line-alignment': 'off',
       'jsdoc/informative-docs': 'off',
       'jsdoc/require-asterisk-prefix': 'off',
+      'max-lines': 'off',
       'no-shadow': 'off',
       'prefer-arrow-callback': 'off',
       'regexp/prefer-named-capture-group': 'off',

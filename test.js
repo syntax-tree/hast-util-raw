@@ -611,6 +611,39 @@ test('raw', async function (t) {
     }
   )
 
+  await t.test(
+    'should support a named character reference at the end of a raw node',
+    async function () {
+      assert.deepEqual(raw(h(null, [{type: 'raw', value: '&amp'}, h('b')])), {
+        type: 'root',
+        data: {quirksMode: false},
+        children: [{type: 'text', value: '&'}, h('b')]
+      })
+    }
+  )
+
+  await t.test(
+    'should support a numeric character reference at the end of a raw node',
+    async function () {
+      assert.deepEqual(raw(h(null, [{type: 'raw', value: '&#123'}, h('b')])), {
+        type: 'root',
+        data: {quirksMode: false},
+        children: [{type: 'text', value: '{'}, h('b')]
+      })
+    }
+  )
+
+  await t.test(
+    'should support a non-reference at the end of a raw node',
+    async function () {
+      assert.deepEqual(raw(h(null, [{type: 'raw', value: '&no'}, h('b')])), {
+        type: 'root',
+        data: {quirksMode: false},
+        children: [{type: 'text', value: '&no'}, h('b')]
+      })
+    }
+  )
+
   await t.test('should switch to data state at a text node', async function () {
     assert.deepEqual(
       raw({
@@ -787,7 +820,10 @@ test('raw', async function (t) {
           ),
           {
             type: 'root',
-            children: [{type: 'text', value: 'a '}, h('title', ' b ')],
+            children: [
+              {type: 'text', value: 'a '},
+              h('title', ' b </textarea>')
+            ],
             data: {quirksMode: false}
           }
         )
@@ -866,7 +902,10 @@ test('raw', async function (t) {
             ),
             {
               type: 'root',
-              children: [{type: 'text', value: 'a '}, h('iframe', ' b ')],
+              children: [
+                {type: 'text', value: 'a '},
+                h('iframe', ' b </style>')
+              ],
               data: {quirksMode: false}
             }
           )
@@ -1001,7 +1040,10 @@ test('raw', async function (t) {
           ),
           {
             type: 'root',
-            children: [{type: 'text', value: 'a '}, h('plaintext', ' b  c.')],
+            children: [
+              {type: 'text', value: 'a '},
+              h('plaintext', ' b </plaintext> c.')
+            ],
             data: {quirksMode: false}
           }
         )
