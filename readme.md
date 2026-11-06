@@ -151,6 +151,7 @@ Configuration.
   * `RCDATA`: `textarea`, `title`
   * `SCRIPT_DATA`: `script`
   * `PLAINTEXT`: `plaintext`
+
   When you know that you do not want authors to write these tags,
   you can enable this option to prevent their use from running amok.
 
