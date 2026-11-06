@@ -155,6 +155,7 @@ Configuration.
 
   This affects the following tags,
   grouped by their kind:
+
   * `RAWTEXT`: `iframe`, `noembed`, `noframes`, `style`, `xmp`
   * `RCDATA`: `textarea`, `title`
   * `SCRIPT_DATA`: `script`
@@ -167,7 +168,7 @@ Configuration.
   [*Disallowed Raw HTML* in
   `cmark-gfm`](https://github.github.com/gfm/#disallowed-raw-html-extension-).
 
-### `raw(tree, options)`
+### `raw(tree[, options])`
 
 Pass a hast tree through an HTML parser,
 which will fix nesting,
