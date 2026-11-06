@@ -102,19 +102,26 @@ console.log(reformatted)
 Yields:
 
 ```js
-{ type: 'element',
+{
+  type: 'element',
   tagName: 'div',
   properties: {},
-  children:
-   [ { type: 'element',
-       tagName: 'h1',
-       properties: {},
-       children: [Object] },
-     { type: 'element',
-       tagName: 'h2',
-       properties: {},
-       children: [Object] },
-     { type: 'text', value: ' Baz' } ] }
+  children: [
+    {
+      type: 'element',
+      tagName: 'h1',
+      properties: {},
+      children: [Array]
+    },
+    {
+      type: 'element',
+      tagName: 'h2',
+      properties: {},
+      children: [Array]
+    },
+    { type: 'text', value: ' Baz' }
+  ]
+}
 ```
 
 ## API
