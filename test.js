@@ -404,6 +404,117 @@ test('raw', async function (t) {
   )
 
   await t.test(
+    'should reset attribute names when discarding a broken tag before an element',
+    async function () {
+      let attributes = ''
+      let index = -1
+
+      while (++index < 65) {
+        attributes += ' a' + index + '="x"'
+      }
+
+      assert.deepEqual(
+        raw({
+          type: 'root',
+          children: [
+            {
+              type: 'raw',
+              value: '<blockquote><div href="bad"' + attributes + '\n\n'
+            },
+            h('p', 'structured'),
+            {
+              type: 'raw',
+              value:
+                '<a href="https://example.com" title="good">ok</a></blockquote>'
+            }
+          ]
+        }),
+        {
+          type: 'root',
+          data: {quirksMode: false},
+          children: [
+            h('blockquote', [
+              h('p', 'structured'),
+              h('a', {href: 'https://example.com', title: 'good'}, 'ok')
+            ])
+          ]
+        }
+      )
+    }
+  )
+
+  await t.test(
+    'should reset attribute names when discarding a broken tag before text',
+    async function () {
+      let attributes = ''
+      let index = -1
+
+      while (++index < 65) {
+        attributes += ' a' + index + '="x"'
+      }
+
+      assert.deepEqual(
+        raw({
+          type: 'root',
+          children: [
+            {
+              type: 'raw',
+              value: '<blockquote><div href="bad"' + attributes + '\n\n'
+            },
+            {type: 'text', value: 'structured'},
+            {
+              type: 'raw',
+              value:
+                '<a href="https://example.com" title="good">ok</a></blockquote>'
+            }
+          ]
+        }),
+        {
+          type: 'root',
+          data: {quirksMode: false},
+          children: [
+            h('blockquote', [
+              {type: 'text', value: 'structured'},
+              h('a', {href: 'https://example.com', title: 'good'}, 'ok')
+            ])
+          ]
+        }
+      )
+    }
+  )
+
+  await t.test(
+    'should keep the first duplicate attributes in a large tag over several raw nodes',
+    async function () {
+      let attributes = ''
+      let index = -1
+
+      while (++index < 65) {
+        attributes += ' a' + index + '="x"'
+      }
+
+      assert.equal(
+        toHtml(
+          raw({
+            type: 'root',
+            children: [
+              {
+                type: 'raw',
+                value: '<a href="https://example.com"' + attributes
+              },
+              {
+                type: 'raw',
+                value: ' href="bad" title="good" title="bad">ok</a>'
+              }
+            ]
+          })
+        ),
+        '<a href="https://example.com"' + attributes + ' title="good">ok</a>'
+      )
+    }
+  )
+
+  await t.test(
     'should support passing through nodes w/o children',
     async function () {
       assert.deepEqual(
